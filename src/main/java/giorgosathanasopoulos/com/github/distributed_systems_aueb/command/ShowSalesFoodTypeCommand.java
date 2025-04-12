@@ -5,7 +5,7 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request.Action;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ShowSalesFoodTypeRequest;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UMID;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 
 import java.io.File;

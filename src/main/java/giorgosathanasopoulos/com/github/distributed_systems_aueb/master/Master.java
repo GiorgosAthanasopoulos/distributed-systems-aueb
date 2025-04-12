@@ -21,7 +21,9 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.RemoveP
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response.Status;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.reducer.Reducer;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.reducer.Reducer1;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.worker.Worker;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.worker.Worker1;
 
 public class Master {
@@ -72,14 +74,14 @@ public class Master {
     private void initWorkers() {
         for (int i = 0; i < WorkerConfig.c_WORKER_COUNT; i++)
             new Thread(
-                    Worker1::new).start();
+                    Worker::new).start();
 
         Logger.info(
                 "Master::initReducer started worker threads");
     }
 
     private void initReducer() {
-        new Thread(Reducer1::new).start();
+        new Thread(Reducer::new).start();
 
         Logger.info(
                 "Master::initReducer started reducer thread");

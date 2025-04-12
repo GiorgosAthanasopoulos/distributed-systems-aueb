@@ -1,8 +1,6 @@
 # temp
 src/main/java/giorgosathanasopoulos/com/github/distributed_systems_aueb/worker/Worker1.java
-src/main/java/giorgosathanasopoulos/com/github/distributed_systems_aueb/worker/WorkerConfig.java
 src/main/java/giorgosathanasopoulos/com/github/distributed_systems_aueb/reducer/Reducer1.java
-src/main/java/giorgosathanasopoulos/com/github/distributed_systems_aueb/reducer/ReducerConfig.java
 run.sh
 log.txt
 
