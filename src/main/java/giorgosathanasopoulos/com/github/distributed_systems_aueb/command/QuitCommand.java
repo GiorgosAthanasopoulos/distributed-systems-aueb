@@ -9,7 +9,6 @@ public class QuitCommand implements Command {
 
     @Override
     public String help() {
-        return CommandConfig.c_QUIT_COMMAND + " -- exits the REPL\n\t" +
-                CommandConfig.c_QUIT_COMMAND_2;
+        return CommandConfig.c_QUIT_COMMAND + " -- exits the REPL";
     }
 }

@@ -5,7 +5,7 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request.Action;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ShowSalesFoodTypeRequest;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.UMID;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UMID;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 
 import java.io.File;
@@ -40,13 +40,13 @@ public class ShowSalesFoodTypeCommand implements Command {
                                                                                 + JsonUtils.getError());
                                                 return false;
                                         }
-                                        request.setId(UMID.getNextUniqueMessageId());
+                                        request.setId(UID.getNextUID());
 
                                         json = JsonUtils.toJson(request);
                                 } else {
                                         ShowSalesFoodTypeRequest request = new ShowSalesFoodTypeRequest(
                                                         UserAgent.CLIENT,
-                                                        UMID.getNextUniqueMessageId(),
+                                                        UID.getNextUID(),
                                                         "", Action.REMOVE_PRODUCT, arg);
                                         json = JsonUtils.toJson(request);
                                 }

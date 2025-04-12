@@ -10,8 +10,8 @@ public class CommandProcessor {
 
         public CommandProcessor() {
                 c_Commands.put(CommandConfig.c_ADD_STORE_COMMAND, new AddStoreCommand());
+                c_Commands.put(CommandConfig.c_FILTER_STORES_COMMAND, new FilterStoresCommand());
                 c_Commands.put(CommandConfig.c_LIST_STORES_COMMAND, new ListStoresCommand());
-                c_Commands.put(CommandConfig.c_LIST_STORES_COMMAND_2, new ListStoresCommand());
 
                 c_Commands.put(
                                 CommandConfig.c_ADD_PRODUCT_COMMAND,
@@ -37,16 +37,12 @@ public class CommandProcessor {
                                 new ShowSalesFoodTypeCommand());
 
                 c_Commands.put(CommandConfig.c_REPL_COMMAND, new REPLCommand());
-                c_Commands.put(CommandConfig.c_REPL_COMMAND_2, new REPLCommand());
                 c_Commands.put(CommandConfig.c_SERVER_COMMAND, new ServerCommand());
-                c_Commands.put(CommandConfig.c_SERVER_COMMAND_2, new ServerCommand());
 
                 c_Commands.put(CommandConfig.c_HELP_COMMAND, new HelpCommand());
-                c_Commands.put(CommandConfig.c_HELP_COMMAND_2, new HelpCommand());
                 c_Commands.put(CommandConfig.c_CLEAR_CONSOLE_COMMAND, new ClearConsoleCommand());
                 c_Commands.put(CommandConfig.c_CLEAR_CONSOLE_COMMAND_2, new ClearConsoleCommand());
                 c_Commands.put(CommandConfig.c_QUIT_COMMAND, new QuitCommand());
-                c_Commands.put(CommandConfig.c_QUIT_COMMAND_2, new QuitCommand());
         }
 
         public boolean process(String[] p_Input) {

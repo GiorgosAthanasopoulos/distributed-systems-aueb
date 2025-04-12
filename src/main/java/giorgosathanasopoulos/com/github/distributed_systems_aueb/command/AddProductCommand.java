@@ -6,7 +6,7 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.model.Product;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.AddProductRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request.Action;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.UMID;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 
 import java.util.Optional;
@@ -36,7 +36,7 @@ public class AddProductCommand implements Command {
                     Logger.error("AddProductCommand::execute failed to parse json file");
                     return false;
                 }
-                request.setId(UMID.getNextUniqueMessageId());
+                request.setId(UID.getNextUID());
                 json = JsonUtils.toJson(request);
             }
             case Integer i when i > 1 -> {
@@ -82,7 +82,7 @@ public class AddProductCommand implements Command {
             return null;
         }
 
-        return new AddProductRequest(UserAgent.CLIENT, UMID.getNextUniqueMessageId(), "",
+        return new AddProductRequest(UserAgent.CLIENT, UID.getNextUID(), "",
                 Action.ADD_PRODUCT, storeName, new Product(productName, productType, availability, price));
     }
 

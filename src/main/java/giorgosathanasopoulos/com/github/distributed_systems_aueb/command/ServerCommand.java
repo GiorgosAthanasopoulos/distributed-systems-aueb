@@ -12,7 +12,6 @@ public class ServerCommand implements Command {
 
     @Override
     public String help() {
-        return CommandConfig.c_SERVER_COMMAND + " -- runs the server\n\t" +
-                CommandConfig.c_SERVER_COMMAND_2;
+        return CommandConfig.c_SERVER_COMMAND + " -- runs the server";
     }
 }

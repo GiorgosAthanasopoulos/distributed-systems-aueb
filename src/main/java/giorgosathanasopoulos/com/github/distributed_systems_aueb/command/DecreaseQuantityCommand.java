@@ -4,7 +4,7 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.file.FileUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.DecreaseQuantityRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.UMID;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UMID;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request.Action;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 
@@ -38,7 +38,7 @@ public class DecreaseQuantityCommand implements Command {
                                                         "DecreaseQuantityCommand::execute failed to parse json file");
                                         return false;
                                 }
-                                request.setId(UMID.getNextUniqueMessageId());
+                                request.setId(UID.getNextUID());
                                 json = JsonUtils.toJson(request);
                         }
                         case Integer i when i > 1 -> {
@@ -76,7 +76,7 @@ public class DecreaseQuantityCommand implements Command {
                         return null;
                 }
 
-                return new DecreaseQuantityRequest(UserAgent.CLIENT, UMID.getNextUniqueMessageId(), "",
+                return new DecreaseQuantityRequest(UserAgent.CLIENT, UID.getNextUID(), "",
                                 Action.DECREASE_QUANTITY, storeName, productName, quantity);
         }
 

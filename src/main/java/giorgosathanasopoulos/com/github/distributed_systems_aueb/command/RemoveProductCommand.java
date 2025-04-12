@@ -4,7 +4,7 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.file.FileUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.RemoveProductRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request.Action;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.UMID;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UMID;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 
@@ -35,7 +35,7 @@ public class RemoveProductCommand implements Command {
                     Logger.error("RemoveProductCommand::execute failed to parse json file");
                     return false;
                 }
-                request.setId(UMID.getNextUniqueMessageId());
+                request.setId(UID.getNextUID());
 
                 json = JsonUtils.toJson(request);
             }
@@ -49,7 +49,7 @@ public class RemoveProductCommand implements Command {
                 String storeName = (String) p_Args[0];
                 String productName = (String) p_Args[1];
 
-                RemoveProductRequest request = new RemoveProductRequest(UserAgent.CLIENT, UMID.getNextUniqueMessageId(),
+                RemoveProductRequest request = new RemoveProductRequest(UserAgent.CLIENT, UID.getNextUID(),
                         "", Action.REMOVE_PRODUCT, storeName, productName);
 
                 json = JsonUtils.toJson(request);

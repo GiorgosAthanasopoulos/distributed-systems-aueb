@@ -12,7 +12,6 @@ public class REPLCommand implements Command {
 
     @Override
     public String help() {
-        return CommandConfig.c_REPL_COMMAND + " -- runs the manager in REPL mode\n\t" +
-                CommandConfig.c_REPL_COMMAND_2;
+        return CommandConfig.c_REPL_COMMAND + " -- runs the manager in REPL mode";
     }
 }

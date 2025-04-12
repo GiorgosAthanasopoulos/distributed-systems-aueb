@@ -4,7 +4,7 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.file.FileUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.AddStoreRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.UMID;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request.Action;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.model.Store;
@@ -36,7 +36,7 @@ public class AddStoreCommand implements Command {
                     Logger.error("AddStoreCommand::execute failed to parse json file");
                     return false;
                 }
-                request.setId(UMID.getNextUniqueMessageId());
+                request.setId(UID.getNextUID());
 
                 json = JsonUtils.toJson(request);
 
@@ -80,7 +80,7 @@ public class AddStoreCommand implements Command {
             int stars = Integer.parseInt(starsString);
             int noOfVotes = Integer.parseInt(noOfVotesString);
 
-            return new AddStoreRequest(UserAgent.CLIENT, UMID.getNextUniqueMessageId(), "", Action.ADD_STORE,
+            return new AddStoreRequest(UserAgent.CLIENT, UID.getNextUID(), "", Action.ADD_STORE,
                     new Store(storeName, latitude, longitude, foodCategory, stars, noOfVotes, storeLogo));
         } catch (NumberFormatException e) {
             Logger.error("AddStoreCommand::getRawAddStoreRequest invalid number format: " + e.getLocalizedMessage());

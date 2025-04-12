@@ -1,10 +1,12 @@
 package giorgosathanasopoulos.com.github.distributed_systems_aueb.command;
 
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.terminal.TerminalUtils;
+
 public class ClearConsoleCommand implements Command {
 
     @Override
     public boolean execute(Object... p_Args) {
-        CommandUtils.clearConsole();
+        TerminalUtils.clearConsole();
         return false;
     }
 

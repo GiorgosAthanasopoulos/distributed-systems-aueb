@@ -8,7 +8,7 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ListProductsRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request.Action;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.UMID;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UMID;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 
 public class ListProductsCommand implements Command {
@@ -40,13 +40,13 @@ public class ListProductsCommand implements Command {
                                         + JsonUtils.getError());
                         return false;
                     }
-                    request.setId(UMID.getNextUniqueMessageId());
+                    request.setId(UID.getNextUID());
 
                     json = JsonUtils.toJson(request);
                 } else {
                     ListProductsRequest request = new ListProductsRequest(
                             UserAgent.CLIENT,
-                            UMID.getNextUniqueMessageId(),
+                            UID.getNextUID(),
                             "", Action.LIST_PRODUCTS, arg);
                     json = JsonUtils.toJson(request);
                 }

@@ -1,0 +1,14 @@
+{
+  "Type": "REQUEST",
+  "UserAgent": "CLIENT",
+  "ID": 9,
+  "Action": "FILTER_STORES",
+  "Filters": {
+    "Latitude": 37.983810,
+    "Longitude": 23.727539,
+    "RadiusKm": 5.0,
+    "FoodType": "pizza,salad",
+    "Stars": "3,4,5",
+    "Price": "$,$$"
+  }
+}

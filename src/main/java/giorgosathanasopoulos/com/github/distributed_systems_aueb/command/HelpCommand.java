@@ -13,6 +13,7 @@ public class HelpCommand implements Command {
         StringBuilder sb = new StringBuilder();
 
         sb.append(new AddStoreCommand().help()).append("\n");
+        sb.append(new FilterStoresCommand().help()).append("\n");
         sb.append(new ListStoresCommand().help()).append("\n");
         sb.append("\n");
 
@@ -32,7 +33,6 @@ public class HelpCommand implements Command {
         sb.append("\n");
 
         sb.append(CommandConfig.c_HELP_COMMAND + " -- shows available commands").append("\n");
-        sb.append("\t").append(CommandConfig.c_HELP_COMMAND_2).append("\n");
         sb.append(new ClearConsoleCommand().help()).append("\n");
         sb.append(new QuitCommand().help()).append("\n");
 
