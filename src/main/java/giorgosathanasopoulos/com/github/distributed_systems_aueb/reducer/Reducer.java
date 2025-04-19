@@ -4,9 +4,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonArray;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
@@ -22,7 +21,7 @@ public class Reducer {
     private final Object connectionLock = new Object();
 
     // Data structures for aggregation
-    private final Map<String, List<JsonObject>> filteredStores = new HashMap<>();
+    private final Map<String, List<JSONObject>> filteredStores = new HashMap<>();
     private final Map<String, Double> salesByStoreType = new HashMap<>();
     private final Map<String, Double> salesByProductType = new HashMap<>();
 
@@ -68,8 +67,6 @@ public class Reducer {
                 UserAgent.REDUCER,
                 UID.getNextUID(),
                 Request.Action.REDUCER_HANDSHAKE);
-        // "Reducer handshake",
-        // "Reducer1");
         sendRequest(handshake);
     }
 
@@ -117,8 +114,6 @@ public class Reducer {
                             UserAgent.REDUCER,
                             UID.getNextUID(),
                             Request.Action.HEARTBEAT);
-                    // "Reducer heartbeat",
-                    // "Reducer");
                     sendRequest(heartbeat);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -155,14 +150,14 @@ public class Reducer {
 
     private void processFilterStoresRequest(Request request) {
         try {
-            JsonObject filterData = new JsonObject(request.getSrc());
+            JSONObject filterData = new JSONObject(request.getSrc());
             String requestId = filterData.getString("requestId");
             JSONArray stores = filterData.getJSONArray("stores");
 
             synchronized (filteredStores) {
-                List<JsonObject> storeList = filteredStores.getOrDefault(requestId, new ArrayList<>());
+                List<JSONObject> storeList = filteredStores.getOrDefault(requestId, new ArrayList<>());
                 for (int i = 0; i < stores.length(); i++) {
-                    storeList.add(stores.getJsonObject(i));
+                    storeList.add(stores.getJSONObject(i));
                 }
                 filteredStores.put(requestId, storeList);
             }
@@ -171,7 +166,6 @@ public class Reducer {
             Response response = new Response(
                     UserAgent.REDUCER,
                     request.getId(),
-                    // request.getSrc(),
                     Status.SUCCESS,
                     "Stores received for filtering");
             sendResponse(response);
@@ -184,7 +178,7 @@ public class Reducer {
 
     private void processSalesByStoreTypeRequest(Request request) {
         try {
-            JsonObject salesData = new JsonObject(request.getSrc());
+            JSONObject salesData = new JSONObject(request.getSrc());
             String storeType = salesData.getString("storeType");
             double amount = salesData.getDouble("amount");
 
@@ -196,7 +190,6 @@ public class Reducer {
             Response response = new Response(
                     UserAgent.REDUCER,
                     request.getId(),
-                    // request.getSrc(),
                     Status.SUCCESS,
                     "Sales data received for store type: " + storeType);
             sendResponse(response);
@@ -209,7 +202,7 @@ public class Reducer {
 
     private void processSalesByFoodTypeRequest(Request request) {
         try {
-            JsonObject salesData = new JsonObject(request.getSrc());
+            JSONObject salesData = new JSONObject(request.getSrc());
             String productType = salesData.getString("productType");
             double amount = salesData.getDouble("amount");
 
@@ -221,7 +214,6 @@ public class Reducer {
             Response response = new Response(
                     UserAgent.REDUCER,
                     request.getId(),
-                    // request.getSrc(),
                     Status.SUCCESS,
                     "Sales data received for product type: " + productType);
             sendResponse(response);
@@ -252,7 +244,6 @@ public class Reducer {
         Response response = new Response(
                 UserAgent.REDUCER,
                 request.getId(),
-                // request.getSrc(),
                 Status.FAILURE,
                 errorMessage);
         sendResponse(response);
@@ -284,7 +275,7 @@ public class Reducer {
     }
 
     // Methods to get aggregated data (called by Master when needed)
-    public synchronized List<JsonObject> getFilteredStores(String requestId) {
+    public synchronized List<JSONObject> getFilteredStores(String requestId) {
         return filteredStores.getOrDefault(requestId, new ArrayList<>());
     }
 

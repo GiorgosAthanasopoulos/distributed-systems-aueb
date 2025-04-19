@@ -20,9 +20,9 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.RemoveP
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response.Status;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.model.Product;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.model.Store;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
 
 public class Worker {
     private final Map<String, Store> stores = new HashMap<>();
@@ -36,7 +36,7 @@ public class Worker {
     private void connectToMaster() {
         try {
             masterSocket = new Socket(WorkerConfig.c_MASTER_HOST, WorkerConfig.c_MASTER_PORT);
-            Logger.info("Worker::connectToMaster connected to master at " +
+            Logger.info("Worker1::connectToMaster connected to master at " +
                     WorkerConfig.c_MASTER_HOST + ":" + WorkerConfig.c_MASTER_PORT);
 
             // Send handshake to master
@@ -44,7 +44,7 @@ public class Worker {
                     Request.Action.WORKER_HANDSHAKE);
             NetworkUtils.sendMessage(masterSocket, JsonUtils.toJson(handshake));
         } catch (IOException e) {
-            Logger.error("Worker::connectToMaster failed to connect to master: " + e.getMessage());
+            Logger.error("Worker1::connectToMaster failed to connect to master: " + e.getMessage());
             System.exit(1);
         }
     }
@@ -56,18 +56,18 @@ public class Worker {
                     continue;
 
                 String json = scanner.nextLine().trim();
-                Logger.info("Worker::startListening received message: " + json);
+                Logger.info("Worker1::startListening received message: " + json);
 
                 processMessage(json);
             }
         } catch (IOException e) {
-            Logger.error("Worker::startListening error reading from master: " + e.getMessage());
+            Logger.error("Worker1::startListening error reading from master: " + e.getMessage());
         } finally {
             try {
                 if (masterSocket != null)
                     masterSocket.close();
             } catch (IOException e) {
-                Logger.error("Worker::startListening error closing socket: " + e.getMessage());
+                Logger.error("Worker1::startListening error closing socket: " + e.getMessage());
             }
         }
     }
@@ -75,7 +75,7 @@ public class Worker {
     private void processMessage(String json) {
         Request request = JsonUtils.fromJson(json, Request.class);
         if (request == null) {
-            Logger.error("Worker::processMessage failed to parse request");
+            Logger.error("Worker1::processMessage failed to parse request");
             return;
         }
 
@@ -191,7 +191,7 @@ public class Worker {
             }
             Product product = productOptional.get();
 
-            product.setQuantity(product.getQuantity() + request.getQuantity());
+            product.increaseQuantity(request.getQuantity());
             return new Response(Message.UserAgent.WORKER, request.getId(),
                     Status.SUCCESS, "Quantity increased successfully");
         }
@@ -218,12 +218,10 @@ public class Worker {
             }
             Product product = productOptional.get();
 
-            if (product.getQuantity() < request.getQuantity()) {
+            if (!product.decreaseQuantity(request.getQuantity())) {
                 return new Response(Message.UserAgent.WORKER, request.getId(),
                         Status.FAILURE, "Insufficient quantity");
             }
-
-            product.setQuantity(product.getQuantity() - request.getQuantity());
             return new Response(Message.UserAgent.WORKER, request.getId(),
                     Status.SUCCESS, "Quantity decreased successfully");
         }
