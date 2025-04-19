@@ -1,0 +1,9 @@
+{
+  "Type": "REQUEST",
+  "UserAgent": "CLIENT",
+  "ID": 2,
+  "Action": "INCREASE_QUANTITY",
+  "StoreName": "storeName",
+  "ProductName": "BBQ",
+  "Quantity": 10
+}

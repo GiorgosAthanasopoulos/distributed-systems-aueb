@@ -1,0 +1,13 @@
+{
+  "Type": "REQUEST",
+  "UserAgent": "CLIENT",
+  "ID": 1,
+  "Action": "ADD_PRODUCT",
+  "StoreName": "storeName",
+  "Product": {
+    "ProductName": "BBQ",
+    "ProductType": "pizza",
+    "Available Amount": 100,
+    "Price": 12.0
+  }
+}

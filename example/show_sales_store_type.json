@@ -1,0 +1,7 @@
+{
+  "Type": "REQUEST",
+  "UserAget": "MASTER",
+  "ID": 8,
+  "Action": "SHOW_SALES_STORE_TYPE",
+  "StoreType": "pizzeria"
+}

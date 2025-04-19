@@ -1,0 +1,8 @@
+{
+  "Type": "REQUEST",
+  "UserAgent": "CLIENT",
+  "ID": 4,
+  "Action": "REMOVE_PRODUCT",
+  "StoreName": "storeName",
+  "ProductName": "BBQ"
+}

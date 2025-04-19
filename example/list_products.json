@@ -1,0 +1,7 @@
+{
+  "Type": "REQUEST",
+  "UserAgent": "CLIENT",
+  "ID": 6,
+  "Action": "LIST_PRODUCTS",
+  "StoreName": "storeName"
+}

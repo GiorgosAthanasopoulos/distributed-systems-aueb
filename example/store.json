@@ -1,0 +1,38 @@
+{
+  "Type": "REQUEST",
+  "UserAgent": "CLIENT",
+  "ID": 0,
+  "Action": "ADD_STORE",
+  "Store": {
+    "Name": "storeName",
+    "Latitude": 37.9932963,
+    "Longitude": 23.733413,
+    "FoodCategory": "pizzeria",
+    "Stars": 3,
+    "NoOfVotes": 15,
+    "LogoPath": "/usr/bin/images/storeLogo.png",
+    "Products": [
+      {
+        "Name": "margarita",
+        "Type": "pizza",
+        "Quantity": 5000,
+        "Price": 9.2,
+        "Visble": true
+      },
+      {
+        "Name": "special",
+        "Type": "pizza",
+        "Quantity": 1000,
+        "Price": 12,
+        "Visible": true
+      },
+      {
+        "Name": "chef’s Salad",
+        "Type": "salad",
+        "Quantity": 100,
+        "Price": 5,
+        "Visible": true
+      }
+    ]
+  }
+}
