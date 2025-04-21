@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 public class Filters {
-    @SerializedName("Langitude")
+    @SerializedName("Latitude")
     private final double c_Latitude;
 
     @SerializedName("Longitude")
@@ -35,7 +35,7 @@ public class Filters {
     }
 
     public double getLatitude() {
-        return c_Longitude;
+        return c_Latitude;
     }
 
     public double getLongitude() {
