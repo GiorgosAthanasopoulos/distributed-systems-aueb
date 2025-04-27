@@ -2,6 +2,8 @@ package giorgosathanasopoulos.com.github.distributed_systems_aueb.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
+
 public class Product {
 
     @SerializedName("Name")
@@ -19,6 +21,9 @@ public class Product {
     @SerializedName("Visible")
     private boolean m_Visible;
 
+    @SerializedName("Id")
+    private final int c_Id;
+
     public Product(
             String p_Name,
             String p_Type,
@@ -29,6 +34,7 @@ public class Product {
         this.m_Quantity = p_Quantity;
         this.c_Price = p_Price;
         this.m_Visible = true;
+        c_Id = UID.getNextUID();
     }
 
     public String getName() {

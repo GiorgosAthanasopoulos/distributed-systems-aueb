@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import com.google.gson.annotations.SerializedName;
 
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
+
 public class Store {
 
     @SerializedName("Name")
@@ -35,6 +37,9 @@ public class Store {
     @SerializedName("InflationIndex")
     private int m_InflationIndex;
 
+    @SerializedName("Id")
+    private final int c_Id;
+
     public Store(
             String p_StoreName,
             double p_Latitude,
@@ -50,6 +55,7 @@ public class Store {
         this.m_Stars = p_Stars;
         this.m_NoOfVotes = p_NoOfVotes;
         this.c_StoreLogo = p_StoreLogo;
+        c_Id = UID.getNextUID();
 
         calculateInflationIndex();
     }
