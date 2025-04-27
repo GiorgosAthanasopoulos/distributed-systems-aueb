@@ -22,6 +22,7 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response.Status;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.reducer.Reducer;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.worker.Worker;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.worker.WorkerConfig;
 
@@ -252,6 +253,9 @@ public class Master {
             return Optional.of(c_INVALID_JSON_RESPONSE);
         }
 
+        if (request.getUserAgent() == UserAgent.CLIENT)
+            request.setId(UID.getNextUID());
+
         int workerId = getWorkerId(request, p_Json);
         switch (workerId) {
             case c_INVALID_ACTION -> {
@@ -263,6 +267,7 @@ public class Master {
                 return handleHandshake(p_Socket, request);
             }
             case c_STATS -> {
+                c_ToSendResponses.put(request.getId(), p_Socket);
                 return handleStats(p_Socket, request, p_Json);
             }
             default -> {
@@ -284,7 +289,7 @@ public class Master {
         String addr = p_Socket.getRemoteSocketAddress().toString();
 
         if (p_Request == null) {
-            Logger.error("Master::handleHandshake " + addr + "r eceived null request");
+            Logger.error("Master::handleHandshake " + addr + " received null request");
             return empty;
         }
 
@@ -458,6 +463,18 @@ public class Master {
 
     // SHOW_SALES_FOOD_TYPE, SHOW_SALES_STORE_TYPE, LIST_STORES, FILTER_STORES
     private Optional<Response> handleStats(Socket p_Socket, Request p_Request, String p_Json) {
+        switch (p_Request.getAction()) {
+            case SHOW_SALES_FOOD_TYPE -> {
+            }
+            case SHOW_SALES_STORE_TYPE -> {
+            }
+            case LIST_STORES -> {
+            }
+            case FILTER_STORES -> {
+            }
+            default -> {
+            }
+        }
         return Optional.empty();
     }
 }
