@@ -17,6 +17,7 @@ public class CommandConfig {
 
     public static final String c_REPL_COMMAND = "--repl";
     public static final String c_SERVER_COMMAND = "--server";
+    public static final String c_CLIENT_COMMAND = "--client";
 
     public static final String c_HELP_COMMAND = "--help";
     public static final String c_CLEAR_CONSOLE_COMMAND = "--clear";

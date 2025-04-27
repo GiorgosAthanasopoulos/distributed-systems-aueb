@@ -1,8 +1,9 @@
 package giorgosathanasopoulos.com.github.distributed_systems_aueb.command;
 
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 import java.util.HashMap;
 import java.util.Map;
+
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 
 public class CommandProcessor {
 
@@ -38,6 +39,7 @@ public class CommandProcessor {
 
                 c_Commands.put(CommandConfig.c_REPL_COMMAND, new REPLCommand());
                 c_Commands.put(CommandConfig.c_SERVER_COMMAND, new ServerCommand());
+                c_Commands.put(CommandConfig.c_CLIENT_COMMAND, new ClientCommand());
 
                 c_Commands.put(CommandConfig.c_HELP_COMMAND, new HelpCommand());
                 c_Commands.put(CommandConfig.c_CLEAR_CONSOLE_COMMAND, new ClearConsoleCommand());

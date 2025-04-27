@@ -5,12 +5,12 @@ import java.net.Socket;
 import java.util.Scanner;
 
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.master.MasterConfig;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ListProductsResponse;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response.About;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response.Status;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 
 public class CommandNetworkHandler {
     public static void handleMessage(String p_Json, String p_ClassMethod) {
@@ -49,15 +49,15 @@ public class CommandNetworkHandler {
 
     private static void logResponseInformation(Response p_Response, String p_Json, String p_ClassMethod) {
         switch (p_Response.getAbout()) {
-            case REDUCER_INFO:
-                break;
+            case REDUCER_INFO -> {
+            }
 
-            case LIST_STORES_REQUEST:
-                break;
-            case FILTER_STORES_REQUEST:
-                break;
+            case LIST_STORES_REQUEST -> {
+            }
+            case FILTER_STORES_REQUEST -> {
+            }
 
-            case LIST_PRODUCTS_REQUEST:
+            case LIST_PRODUCTS_REQUEST -> {
                 ListProductsResponse listProductsResponse = JsonUtils.fromJson(p_Json, ListProductsResponse.class);
 
                 if (listProductsResponse == null) {
@@ -67,18 +67,18 @@ public class CommandNetworkHandler {
                 }
 
                 Logger.info(p_ClassMethod + " received products list for store " + listProductsResponse.toString());
-                break;
+            }
 
-            case SHOW_SALES_FOOD_TYPE_REQUEST:
-                break;
-            case SHOW_SALES_STORE_TYPE_REQUEST:
-                break;
+            case SHOW_SALES_FOOD_TYPE_REQUEST -> {
+            }
+            case SHOW_SALES_STORE_TYPE_REQUEST -> {
+            }
 
-            case DEFAULT:
-                break;
+            case DEFAULT -> {
+            }
 
-            default:
-                break;
+            default -> {
+            }
         }
     }
 }

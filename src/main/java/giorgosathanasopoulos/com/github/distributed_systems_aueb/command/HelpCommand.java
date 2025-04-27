@@ -32,6 +32,7 @@ public class HelpCommand implements Command {
 
         sb.append(new ServerCommand().help()).append("\n");
         sb.append(new REPLCommand().help()).append("\n");
+        sb.append(new ClientCommand().help()).append("\n");
         sb.append("\n");
 
         sb.append(CommandConfig.c_HELP_COMMAND + " -- shows available commands").append("\n");

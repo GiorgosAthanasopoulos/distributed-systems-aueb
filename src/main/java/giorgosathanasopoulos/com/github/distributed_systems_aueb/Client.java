@@ -1,4 +1,4 @@
-package giorgosathanasopoulos.com.github.distributed_systems_aueb.client;
+package giorgosathanasopoulos.com.github.distributed_systems_aueb;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.function.Predicate;
 
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.client.ClientConfig;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.model.Filters;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.FilterStoresRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message;
@@ -13,7 +14,7 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Network
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
 
-public class DummyClient {
+public class Client {
     private static final Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -38,6 +39,7 @@ public class DummyClient {
             return;
         }
 
+        System.out.println(jsonResponse);
         // TODO
     }
 
