@@ -267,7 +267,6 @@ public class Master {
                 return handleHandshake(p_Socket, request);
             }
             case c_STATS -> {
-                c_ToSendResponses.put(request.getId(), p_Socket);
                 return handleStats(p_Socket, request, p_Json);
             }
             default -> {
@@ -473,8 +472,11 @@ public class Master {
             case FILTER_STORES -> {
             }
             default -> {
+                return Optional
+                        .of(new Response(UserAgent.MASTER, p_Request.getId(), Status.FAILURE, "Invalid stats request"));
             }
         }
+
         return Optional.empty();
     }
 }

@@ -21,8 +21,8 @@ public class Request extends Message {
 
     public enum Action {
         ADD_STORE,
-        LIST_STORES,
-        FILTER_STORES,
+        LIST_STORES, // stats
+        FILTER_STORES, // stats
 
         ADD_PRODUCT,
         LIST_PRODUCTS,
@@ -30,11 +30,11 @@ public class Request extends Message {
         DECREASE_QUANTITY,
         INCREASE_QUANTITY,
 
-        SHOW_SALES_FOOD_TYPE,
-        SHOW_SALES_STORE_TYPE,
+        SHOW_SALES_FOOD_TYPE, // stats
+        SHOW_SALES_STORE_TYPE, // stats
 
-        WORKER_HANDSHAKE,
-        REDUCER_HANDSHAKE,
+        WORKER_HANDSHAKE, // handshake
+        REDUCER_HANDSHAKE, // handshake
 
         HEARTBEAT,
     }
