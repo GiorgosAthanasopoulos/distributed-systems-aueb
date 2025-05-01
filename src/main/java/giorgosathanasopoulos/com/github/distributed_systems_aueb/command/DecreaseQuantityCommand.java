@@ -31,15 +31,16 @@ public class DecreaseQuantityCommand implements Command {
 
                                 json = jsonOptional.get();
 
-                                DecreaseQuantityRequest request = JsonUtils.fromJson(json,
+                                Optional<DecreaseQuantityRequest> requestOptional = JsonUtils.fromJson(json,
                                                 DecreaseQuantityRequest.class);
-                                if (request == null) {
+                                if (requestOptional.isEmpty()) {
                                         Logger.error(
                                                         "DecreaseQuantityCommand::execute failed to parse json file");
                                         return false;
                                 }
+                                DecreaseQuantityRequest request = requestOptional.get();
                                 request.setId(UID.getNextUID());
-                                json = JsonUtils.toJson(request);
+                                json = JsonUtils.toJson(requestOptional);
                         }
                         case Integer i when i > 1 -> {
                                 if (p_Args.length < 3) {

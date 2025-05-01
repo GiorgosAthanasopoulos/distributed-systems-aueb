@@ -32,17 +32,18 @@ public class ListProductsCommand implements Command {
 
                     json = jsonOptional.get();
 
-                    ListProductsRequest request = JsonUtils.fromJson(json,
+                    Optional<ListProductsRequest> requestOptional = JsonUtils.fromJson(json,
                             ListProductsRequest.class);
-                    if (request == null) {
+                    if (requestOptional.isEmpty()) {
                         Logger.error(
                                 "ListProductsCommand::execute failed to parse json: "
                                         + JsonUtils.getError());
                         return false;
                     }
+                    ListProductsRequest request = requestOptional.get();
                     request.setId(UID.getNextUID());
 
-                    json = JsonUtils.toJson(request);
+                    json = JsonUtils.toJson(requestOptional);
                 } else {
                     ListProductsRequest request = new ListProductsRequest(
                             UserAgent.CLIENT,

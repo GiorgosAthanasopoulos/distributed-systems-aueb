@@ -30,14 +30,15 @@ public class RemoveProductCommand implements Command {
 
                 json = jsonOptional.get();
 
-                RemoveProductRequest request = JsonUtils.fromJson(json, RemoveProductRequest.class);
-                if (request == null) {
+                Optional<RemoveProductRequest> requestOptional = JsonUtils.fromJson(json, RemoveProductRequest.class);
+                if (requestOptional.isEmpty()) {
                     Logger.error("RemoveProductCommand::execute failed to parse json file");
                     return false;
                 }
+                RemoveProductRequest request = requestOptional.get();
                 request.setId(UID.getNextUID());
 
-                json = JsonUtils.toJson(request);
+                json = JsonUtils.toJson(requestOptional);
             }
             case Integer i when i > 1 -> {
                 if (p_Args.length < 2) {

@@ -140,15 +140,15 @@ public class Store {
         return c_Products.stream().anyMatch(p -> p.getName().equals(p_Product.getName()));
     }
 
-    public boolean containsProduct(String productName) {
-        return c_Products.stream().anyMatch(p -> p.getName().equals(productName));
+    public boolean containsProduct(String p_ProductName) {
+        return c_Products.stream().anyMatch(p -> p.getName().equals(p_ProductName));
     }
 
     public int getInflationIndex() {
         return m_InflationIndex;
     }
 
-    public Optional<Product> getProduct(String productName) {
-        return c_Products.stream().filter(p -> p.getName().equals(productName)).findFirst();
+    public Optional<Product> getProduct(String p_ProductName) {
+        return c_Products.stream().filter(p -> p.getName().equals(p_ProductName)).findFirst();
     }
 }

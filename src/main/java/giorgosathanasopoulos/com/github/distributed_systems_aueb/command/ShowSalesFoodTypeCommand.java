@@ -32,14 +32,15 @@ public class ShowSalesFoodTypeCommand implements Command {
 
                                         json = jsonOptional.get();
 
-                                        ShowSalesFoodTypeRequest request = JsonUtils.fromJson(json,
+                                        Optional<ShowSalesFoodTypeRequest> requestOptional = JsonUtils.fromJson(json,
                                                         ShowSalesFoodTypeRequest.class);
-                                        if (request == null) {
+                                        if (requestOptional.isEmpty()) {
                                                 Logger.error(
                                                                 "ShowSalesFoodTypeCommand::execute failed to parse json: "
                                                                                 + JsonUtils.getError());
                                                 return false;
                                         }
+                                        ShowSalesFoodTypeRequest request = requestOptional.get();
                                         request.setId(UID.getNextUID());
 
                                         json = JsonUtils.toJson(request);

@@ -31,14 +31,15 @@ public class ShowSalesStoreTypeCommand implements Command {
 
                     json = jsonOptional.get();
 
-                    ShowSalesStoreTypeRequest request = JsonUtils.fromJson(json,
+                    Optional<ShowSalesStoreTypeRequest> requestOptional = JsonUtils.fromJson(json,
                             ShowSalesStoreTypeRequest.class);
-                    if (request == null) {
+                    if (requestOptional.isEmpty()) {
                         Logger.error(
                                 "ShowSalesStoreTypeCommand::execute failed to parse json: "
                                         + JsonUtils.getError());
                         return false;
                     }
+                    ShowSalesStoreTypeRequest request = requestOptional.get();
                     request.setId(UID.getNextUID());
 
                     json = JsonUtils.toJson(request);

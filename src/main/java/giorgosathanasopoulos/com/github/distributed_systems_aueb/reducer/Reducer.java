@@ -123,7 +123,8 @@ public class Reducer implements AutoCloseable {
                         continue;
                     }
 
-                    processMessage(JsonUtils.fromJson(messageJson, Message.class));
+                    processMessage(JsonUtils.fromJson(messageJson, Message.class).get()); // TODO: not checking if
+                                                                                          // optional is present
 
                 } catch (IOException | InterruptedException e) {
                     Logger.error("Error in reducer listening thread: " + e.getMessage());
@@ -160,9 +161,9 @@ public class Reducer implements AutoCloseable {
 
         try {
             if (message.getType() == Message.Type.REQUEST) {
-                Request request = JsonUtils.fromJson(JsonUtils.toJson(message), Request.class);
-                if (request != null) {
-                    processRequest(request);
+                Optional<Request> requestOptional = JsonUtils.fromJson(JsonUtils.toJson(message), Request.class);
+                if (requestOptional.isPresent()) {
+                    processRequest(requestOptional.get());
                 } else {
                     Logger.warn("Failed to parse request from message");
                 }

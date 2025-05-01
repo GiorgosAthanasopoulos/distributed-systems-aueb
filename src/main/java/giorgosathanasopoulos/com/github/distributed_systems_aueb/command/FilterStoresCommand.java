@@ -33,11 +33,12 @@ public class FilterStoresCommand implements Command {
 
                 json = jsonOptional.get();
 
-                FilterStoresRequest request = JsonUtils.fromJson(json, FilterStoresRequest.class);
-                if (request == null) {
+                Optional<FilterStoresRequest> requestOptional = JsonUtils.fromJson(json, FilterStoresRequest.class);
+                if (requestOptional.isEmpty()) {
                     Logger.error("FilterStoresRequest::execute failed to parse json file");
                     return false;
                 }
+                FilterStoresRequest request = requestOptional.get();
                 request.setId(UID.getNextUID());
                 json = JsonUtils.toJson(request);
             }

@@ -31,13 +31,14 @@ public class IncreaseQuantityCommand implements Command {
 
                                 json = jsonOptional.get();
 
-                                IncreaseQuantityRequest request = JsonUtils.fromJson(json,
+                                Optional<IncreaseQuantityRequest> requestOptional = JsonUtils.fromJson(json,
                                                 IncreaseQuantityRequest.class);
-                                if (request == null) {
+                                if (requestOptional.isEmpty()) {
                                         Logger.error(
                                                         "IncreaseQuantityCommand::execute failed to parse json file");
                                         return false;
                                 }
+                                IncreaseQuantityRequest request = requestOptional.get();
                                 request.setId(UID.getNextUID());
                                 json = JsonUtils.toJson(request);
                         }

@@ -31,14 +31,15 @@ public class AddStoreCommand implements Command {
 
                 json = jsonOptional.get();
 
-                AddStoreRequest request = JsonUtils.fromJson(json, AddStoreRequest.class);
-                if (request == null) {
+                Optional<AddStoreRequest> requestOptional = JsonUtils.fromJson(json, AddStoreRequest.class);
+                if (requestOptional.isEmpty()) {
                     Logger.error("AddStoreCommand::execute failed to parse json file");
                     return false;
                 }
+                AddStoreRequest request = requestOptional.get();
                 request.setId(UID.getNextUID());
 
-                json = JsonUtils.toJson(request);
+                json = JsonUtils.toJson(requestOptional);
 
             }
             case Integer i when i > 1 -> {

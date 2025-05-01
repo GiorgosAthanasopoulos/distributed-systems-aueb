@@ -368,7 +368,8 @@ public class Worker1 {
     private Optional<Response> handleShowSalesStoreType(Request p_Request, String p_Json) {
         String addr = c_Socket.getLocalSocketAddress().toString();
 
-        Optional<ShowSalesStoreTypeRequest> requestOptional = JsonUtils.fromJson(p_Json, ShowSalesStoreType.class);
+        Optional<ShowSalesStoreTypeRequest> requestOptional = JsonUtils.fromJson(p_Json,
+                ShowSalesStoreTypeRequest.class);
         if (requestOptional.isEmpty()) {
             Logger.error("Worker::handleShowSalesStoreType" + addr
                     + " received invalid show sales store type request json");

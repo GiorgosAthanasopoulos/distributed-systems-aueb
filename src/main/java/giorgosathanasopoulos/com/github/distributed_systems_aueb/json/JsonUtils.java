@@ -1,5 +1,7 @@
 package giorgosathanasopoulos.com.github.distributed_systems_aueb.json;
 
+import java.util.Optional;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -15,13 +17,13 @@ public class JsonUtils {
         return c_Gson.toJson(p_Obj);
     }
 
-    public static <T> T fromJson(String p_Json, Class<T> p_Class) {
+    public static <T> Optional<T> fromJson(String p_Json, Class<T> p_Class) {
         try {
-            return c_Gson.fromJson(p_Json, p_Class);
+            return Optional.of(c_Gson.fromJson(p_Json, p_Class));
         } catch (JsonSyntaxException e) {
             s_Error = e.getLocalizedMessage();
             Logger.error("JsonUtils::fromJson failed to parse json (" + p_Json + "): " + s_Error);
-            return null;
+            return Optional.empty();
         }
     }
 

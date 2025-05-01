@@ -164,11 +164,12 @@ public class Master {
             Logger.error("Master::handleMessage " + addr + " received null message");
             return empty;
         }
-        Message message = JsonUtils.fromJson(p_Json, Message.class);
-        if (message == null) {
+        Optional<Message> messageOptional = JsonUtils.fromJson(p_Json, Message.class);
+        if (messageOptional.isEmpty()) {
             Logger.error("Master::handleMessage " + addr + " failed to parse json message");
             return Optional.of(c_INVALID_JSON_RESPONSE);
         }
+        Message message = messageOptional.get();
 
         return switch (message.getType()) {
             case REQUEST -> handleRequest(p_Socket, p_Json);
@@ -204,11 +205,12 @@ public class Master {
             return empty;
         }
 
-        Response response = JsonUtils.fromJson(p_Json, Response.class);
-        if (response == null) {
+        Optional<Response> responseOptional = JsonUtils.fromJson(p_Json, Response.class);
+        if (responseOptional.isEmpty()) {
             Logger.error("Master::handleResponse " + addr + " failed to parse response json");
             return Optional.of(c_INVALID_JSON_RESPONSE);
         }
+        Response response = responseOptional.get();
 
         int id = response.getId();
 
@@ -247,11 +249,12 @@ public class Master {
             return empty;
         }
 
-        Request request = JsonUtils.fromJson(p_Json, Request.class);
-        if (request == null) {
+        Optional<Request> requestOptional = JsonUtils.fromJson(p_Json, Request.class);
+        if (requestOptional.isEmpty()) {
             Logger.error("Master::handleRequest " + addr + " failed to parse json");
             return Optional.of(c_INVALID_JSON_RESPONSE);
         }
+        Request request = requestOptional.get();
 
         if (request.getUserAgent() == UserAgent.CLIENT)
             request.setId(UID.getNextUID());
@@ -366,53 +369,55 @@ public class Master {
 
         switch (p_Request.getAction()) {
             case ADD_STORE:
-                AddStoreRequest addStoreRequest = JsonUtils.fromJson(p_Json, AddStoreRequest.class);
-                if (addStoreRequest == null) {
+                Optional<AddStoreRequest> addStoreRequest = JsonUtils.fromJson(p_Json, AddStoreRequest.class);
+                if (addStoreRequest.isEmpty()) {
                     Logger.error("Master::getStoreNameFromRequest  failed to parse add store request json");
                     return empty;
                 }
-                return Optional.of(addStoreRequest.getStore().getStoreName());
+                return Optional.of(addStoreRequest.get().getStore().getStoreName());
             case LIST_STORES:
             case FILTER_STORES:
                 return empty;
 
             case ADD_PRODUCT:
-                AddProductRequest addProductRequest = JsonUtils.fromJson(p_Json, AddProductRequest.class);
-                if (addProductRequest == null) {
+                Optional<AddProductRequest> addProductRequest = JsonUtils.fromJson(p_Json, AddProductRequest.class);
+                if (addProductRequest.isEmpty()) {
                     Logger.error("Master::getStoreNameFromRequest failed to parse add product request json");
                     return empty;
                 }
-                return Optional.of(addProductRequest.getStoreName());
+                return Optional.of(addProductRequest.get().getStoreName());
             case LIST_PRODUCTS:
-                ListProductsRequest listProductsRequest = JsonUtils.fromJson(p_Json, ListProductsRequest.class);
-                if (listProductsRequest == null) {
+                Optional<ListProductsRequest> listProductsRequest = JsonUtils.fromJson(p_Json,
+                        ListProductsRequest.class);
+                if (listProductsRequest.isEmpty()) {
                     Logger.error("Master::getStoreNameFromRequest failed to parse list products json");
                     return empty;
                 }
-                return Optional.of(listProductsRequest.getStoreName());
+                return Optional.of(listProductsRequest.get().getStoreName());
             case REMOVE_PRODUCT:
-                RemoveProductRequest removeProductRequest = JsonUtils.fromJson(p_Json, RemoveProductRequest.class);
-                if (removeProductRequest == null) {
+                Optional<RemoveProductRequest> removeProductRequest = JsonUtils.fromJson(p_Json,
+                        RemoveProductRequest.class);
+                if (removeProductRequest.isEmpty()) {
                     Logger.error("Master::getStoreNameFromRequest  failed to parse remove product json");
                     return empty;
                 }
-                return Optional.of(removeProductRequest.getStoreName());
+                return Optional.of(removeProductRequest.get().getStoreName());
             case DECREASE_QUANTITY:
-                DecreaseQuantityRequest decreaseQuantityRequest = JsonUtils.fromJson(p_Json,
+                Optional<DecreaseQuantityRequest> decreaseQuantityRequest = JsonUtils.fromJson(p_Json,
                         DecreaseQuantityRequest.class);
-                if (decreaseQuantityRequest == null) {
+                if (decreaseQuantityRequest.isEmpty()) {
                     Logger.error("Master::getStoreNameFromRequest  failed to parse decrease quantity request json");
                     return empty;
                 }
-                return Optional.of(decreaseQuantityRequest.getStoreName());
+                return Optional.of(decreaseQuantityRequest.get().getStoreName());
             case INCREASE_QUANTITY:
-                IncreaseQuantityRequest increaseQuantityRequest = JsonUtils.fromJson(p_Json,
+                Optional<IncreaseQuantityRequest> increaseQuantityRequest = JsonUtils.fromJson(p_Json,
                         IncreaseQuantityRequest.class);
-                if (increaseQuantityRequest == null) {
+                if (increaseQuantityRequest.isEmpty()) {
                     Logger.error("Master::getStoreNameFromRequest failed to parse increase quantity request json");
                     return empty;
                 }
-                return Optional.of(increaseQuantityRequest.getStoreName());
+                return Optional.of(increaseQuantityRequest.get().getStoreName());
 
             case SHOW_SALES_FOOD_TYPE:
             case SHOW_SALES_STORE_TYPE:
@@ -460,6 +465,7 @@ public class Master {
         return p_StoreName != null ? p_StoreName.hashCode() : 0;
     }
 
+    // TODO:
     // SHOW_SALES_FOOD_TYPE, SHOW_SALES_STORE_TYPE, LIST_STORES, FILTER_STORES
     private Optional<Response> handleStats(Socket p_Socket, Request p_Request, String p_Json) {
         switch (p_Request.getAction()) {

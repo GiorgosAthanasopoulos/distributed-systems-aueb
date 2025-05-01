@@ -31,11 +31,12 @@ public class AddProductCommand implements Command {
 
                 json = jsonOptional.get();
 
-                AddProductRequest request = JsonUtils.fromJson(json, AddProductRequest.class);
-                if (request == null) {
+                Optional<AddProductRequest> requestOptional = JsonUtils.fromJson(json, AddProductRequest.class);
+                if (requestOptional.isEmpty()) {
                     Logger.error("AddProductCommand::execute failed to parse json file");
                     return false;
                 }
+                AddProductRequest request = requestOptional.get();
                 request.setId(UID.getNextUID());
                 json = JsonUtils.toJson(request);
             }

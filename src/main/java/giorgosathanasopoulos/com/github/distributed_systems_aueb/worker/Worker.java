@@ -17,7 +17,7 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
 
 public class Worker {
     private final Map<String, Store> stores = new HashMap<>();
-    private final Object storesLock = new Object();
+    // private final Object storesLock = new Object();
     private Socket masterSocket;
     private ExecutorService threadPool;
     private final BlockingQueue<Response> responseQueue;
@@ -116,11 +116,12 @@ public class Worker {
 
     private void processMessage(String json) {
         try {
-            Request request = JsonUtils.fromJson(json, Request.class);
-            if (request == null) {
+            Optional<Request> requestOptional = JsonUtils.fromJson(json, Request.class);
+            if (requestOptional.isEmpty()) {
                 Logger.error("Worker failed to parse request");
                 return;
             }
+            Request request = requestOptional.get();
 
             Response response = handleRequest(request, json);
             if (response != null) {
@@ -160,11 +161,12 @@ public class Worker {
     // All the existing handleXXXRequest methods remain exactly the same
     // (handleAddStoreRequest, handleAddProductRequest, etc.)
     private Response handleAddStoreRequest(String json) {
-        AddStoreRequest request = JsonUtils.fromJson(json, AddStoreRequest.class);
-        if (request == null) {
+        Optional<AddStoreRequest> requestOptional = JsonUtils.fromJson(json, AddStoreRequest.class);
+        if (requestOptional.isEmpty()) {
             return new Response(Message.UserAgent.WORKER, -1,
                     Response.Status.FAILURE, "Invalid AddStoreRequest");
         }
+        AddStoreRequest request = requestOptional.get();
 
         Store store = request.getStore();
         synchronized (stores) {
@@ -180,11 +182,12 @@ public class Worker {
     }
 
     private Response handleAddProductRequest(String json) {
-        AddProductRequest request = JsonUtils.fromJson(json, AddProductRequest.class);
-        if (request == null) {
+        Optional<AddProductRequest> requestOptional = JsonUtils.fromJson(json, AddProductRequest.class);
+        if (requestOptional.isEmpty()) {
             return new Response(Message.UserAgent.WORKER, -1,
                     Response.Status.FAILURE, "Invalid AddProductRequest");
         }
+        AddProductRequest request = requestOptional.get();
 
         synchronized (stores) {
             Store store = stores.get(request.getStoreName());
@@ -201,11 +204,12 @@ public class Worker {
     }
 
     private Response handleRemoveProductRequest(String json) {
-        RemoveProductRequest request = JsonUtils.fromJson(json, RemoveProductRequest.class);
-        if (request == null) {
+        Optional<RemoveProductRequest> requestOptional = JsonUtils.fromJson(json, RemoveProductRequest.class);
+        if (requestOptional.isEmpty()) {
             return new Response(Message.UserAgent.WORKER, -1,
                     Response.Status.FAILURE, "Invalid RemoveProductRequest");
         }
+        RemoveProductRequest request = requestOptional.get();
 
         synchronized (stores) {
             Store store = stores.get(request.getStoreName());
@@ -225,11 +229,12 @@ public class Worker {
     }
 
     private Response handleIncreaseQuantityRequest(String json) {
-        IncreaseQuantityRequest request = JsonUtils.fromJson(json, IncreaseQuantityRequest.class);
-        if (request == null) {
+        Optional<IncreaseQuantityRequest> requestOptional = JsonUtils.fromJson(json, IncreaseQuantityRequest.class);
+        if (requestOptional.isEmpty()) {
             return new Response(Message.UserAgent.WORKER, -1,
                     Response.Status.FAILURE, "Invalid IncreaseQuantityRequest");
         }
+        IncreaseQuantityRequest request = requestOptional.get();
 
         synchronized (stores) {
             Store store = stores.get(request.getStoreName());
@@ -252,11 +257,12 @@ public class Worker {
     }
 
     private Response handleDecreaseQuantityRequest(String json) {
-        DecreaseQuantityRequest request = JsonUtils.fromJson(json, DecreaseQuantityRequest.class);
-        if (request == null) {
+        Optional<DecreaseQuantityRequest> requestOptional = JsonUtils.fromJson(json, DecreaseQuantityRequest.class);
+        if (requestOptional.isEmpty()) {
             return new Response(Message.UserAgent.WORKER, -1,
                     Response.Status.FAILURE, "Invalid DecreaseQuantityRequest");
         }
+        DecreaseQuantityRequest request = requestOptional.get();
 
         synchronized (stores) {
             Store store = stores.get(request.getStoreName());
@@ -282,11 +288,12 @@ public class Worker {
     }
 
     private Response handleListProductsRequest(String json) {
-        ListProductsRequest request = JsonUtils.fromJson(json, ListProductsRequest.class);
-        if (request == null) {
+        Optional<ListProductsRequest> requestOptional = JsonUtils.fromJson(json, ListProductsRequest.class);
+        if (requestOptional.isEmpty()) {
             return new Response(Message.UserAgent.WORKER, -1,
                     Response.Status.FAILURE, "Invalid ListProductsRequest");
         }
+        ListProductsRequest request = requestOptional.get();
 
         synchronized (stores) {
             Store store = stores.get(request.getStoreName());

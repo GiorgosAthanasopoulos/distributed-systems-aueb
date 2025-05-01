@@ -2,6 +2,7 @@ package giorgosathanasopoulos.com.github.distributed_systems_aueb.command;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Optional;
 import java.util.Scanner;
 
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
@@ -23,10 +24,14 @@ public class CommandNetworkHandler {
                 }
                 String jsonResponse = sc.nextLine();
 
-                Response response = JsonUtils.fromJson(jsonResponse, Response.class);
-                if (response == null) {
+                Optional<Response> responseOptional = JsonUtils.fromJson(jsonResponse, Response.class);
+                if (responseOptional.isEmpty()) {
                     Logger.error(p_ClassMethod + " failed to read response from server");
+                    sc.close();
+                    ;
+                    return;
                 }
+                Response response = responseOptional.get();
 
                 if (response.getStatus() == Status.SUCCESS) {
                     Logger.info(p_ClassMethod + " received successful response from server: "
@@ -43,6 +48,7 @@ public class CommandNetworkHandler {
             } catch (IOException e) {
                 Logger.error(
                         p_ClassMethod + " failed to connect to server: " + e.getLocalizedMessage());
+                return;
             }
         }).start();
     }
@@ -58,15 +64,17 @@ public class CommandNetworkHandler {
             }
 
             case LIST_PRODUCTS_REQUEST -> {
-                ListProductsResponse listProductsResponse = JsonUtils.fromJson(p_Json, ListProductsResponse.class);
+                Optional<ListProductsResponse> listProductsResponse = JsonUtils.fromJson(p_Json,
+                        ListProductsResponse.class);
 
-                if (listProductsResponse == null) {
+                if (listProductsResponse.isEmpty()) {
                     Logger.error(
                             p_ClassMethod + " could not parse list products request response");
                     break;
                 }
 
-                Logger.info(p_ClassMethod + " received products list for store " + listProductsResponse.toString());
+                Logger.info(
+                        p_ClassMethod + " received products list for store " + listProductsResponse.get().toString());
             }
 
             case SHOW_SALES_FOOD_TYPE_REQUEST -> {
