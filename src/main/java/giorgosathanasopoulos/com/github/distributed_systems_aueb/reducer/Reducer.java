@@ -89,9 +89,9 @@ public class Reducer implements AutoCloseable {
 
     public boolean isConnected() {
         synchronized (connectionLock) {
-            return masterSocket != null 
-                && masterSocket.isConnected() 
-                && !masterSocket.isClosed();
+            return masterSocket != null
+                    && masterSocket.isConnected()
+                    && !masterSocket.isClosed();
         }
     }
 
@@ -199,27 +199,28 @@ public class Reducer implements AutoCloseable {
     }
 
     private void processAsMapReduce(Request request,
-                                  Function<JSONObject, Map<String, Object>> mapper,
-                                  BiFunction<Map<String, Object>, Map<String, Object>, Map<String, Object>> reducer) {
+            Function<JSONObject, Map<String, Object>> mapper,
+            BiFunction<Map<String, Object>, Map<String, Object>, Map<String, Object>> reducer) {
         JSONObject inputData = new JSONObject(request.getSrc());
         String requestId = inputData.getString("requestId");
-        
+
         // Map phase
         Map<String, Object> mappedData = mapper.apply(inputData);
-        
+
         // Reduce phase
         Map<String, Object> currentResults = intermediateResults.compute(requestId, (key, existing) -> {
-            if (existing == null) return mappedData;
+            if (existing == null)
+                return mappedData;
             return reducer.apply(existing, mappedData);
         });
-        
+
         // Store final result when complete
         if (inputData.optBoolean("isFinalBatch", false)) {
             JSONObject finalResult = new JSONObject(currentResults);
             finalResults.put(requestId, new MapReduceResult(finalResult));
             intermediateResults.remove(requestId);
         }
-        
+
         sendSuccessResponse(request, "Processed successfully");
     }
 
@@ -271,14 +272,14 @@ public class Reducer implements AutoCloseable {
         if (result == null) {
             Logger.warn("No results found for requestId: " + requestId);
             return new JSONObject()
-                .put("status", "not_found")
-                .put("requestId", requestId)
-                .put("timestamp", System.currentTimeMillis());
+                    .put("status", "not_found")
+                    .put("requestId", requestId)
+                    .put("timestamp", System.currentTimeMillis());
         }
         return result.aggregatedData
-            .put("status", "success")
-            .put("requestId", requestId)
-            .put("timestamp", result.timestamp);
+                .put("status", "success")
+                .put("requestId", requestId)
+                .put("timestamp", result.timestamp);
     }
 
     private void sendRequest(Request request) {
@@ -353,9 +354,9 @@ public class Reducer implements AutoCloseable {
                 UserAgent.REDUCER,
                 request.getId(),
                 Status.FAILURE,
-                "Error: " + errorMessage + 
-                " | Timestamp: " + System.currentTimeMillis() +
-                " | RequestAction: " + request.getAction());
+                "Error: " + errorMessage +
+                        " | Timestamp: " + System.currentTimeMillis() +
+                        " | RequestAction: " + request.getAction());
         sendResponse(response);
     }
 
@@ -366,46 +367,41 @@ public class Reducer implements AutoCloseable {
         performHandshake();
     }
 
-  private void cleanup() {
-    synchronized (connectionLock) {
-        IOException exception = null;
-        
-        try {
+    private void cleanup() {
+        synchronized (connectionLock) {
+            IOException exception = null;
+
             if (out != null) {
                 out.close();
             }
-        } catch (IOException e) {
-            exception = e;
-            Logger.error("Error closing output stream: " + e.getMessage());
-        }
-        
-        try {
-            if (in != null) {
-                in.close();
+
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException e) {
+                exception = e;
+                Logger.error("Error closing input stream: " + e.getMessage());
             }
-        } catch (IOException e) {
-            exception = e;
-            Logger.error("Error closing input stream: " + e.getMessage());
-        }
-        
-        try {
-            if (masterSocket != null) {
-                masterSocket.close();
+
+            try {
+                if (masterSocket != null) {
+                    masterSocket.close();
+                }
+            } catch (IOException e) {
+                exception = e;
+                Logger.error("Error closing socket: " + e.getMessage());
             }
-        } catch (IOException e) {
-            exception = e;
-            Logger.error("Error closing socket: " + e.getMessage());
-        }
-        
-        out = null;
-        in = null;
-        masterSocket = null;
-        
-        if (exception != null) {
-            throw new UncheckedIOException("Cleanup failed", exception);
+
+            out = null;
+            in = null;
+            masterSocket = null;
+
+            if (exception != null) {
+                throw new UncheckedIOException("Cleanup failed", exception);
+            }
         }
     }
-}
 
     @Override
     public void close() {
