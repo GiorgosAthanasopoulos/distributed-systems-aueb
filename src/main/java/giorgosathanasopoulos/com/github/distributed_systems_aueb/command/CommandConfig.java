@@ -11,6 +11,7 @@ public class CommandConfig {
     public static final String c_REMOVE_PRODUCT_COMMAND = "--remove-product";
     public static final String c_INCREASE_QUANTITY_COMMAND = "--increase-quantity";
     public static final String c_DECREASE_QUANTITY_COMMAND = "--decrease-quantity";
+    public static final String c_BUY_PRODUCT_COMMAND = "--buy-product";
 
     public static final String c_SHOW_SALES_STORE_TYPE_COMMAND = "--show-sales-store-type";
     public static final String c_SHOW_SALES_FOOD_TYPE_COMMAND = "--show-sales-food-type";

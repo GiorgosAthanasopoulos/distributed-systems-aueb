@@ -125,14 +125,14 @@ public class Store {
         return true;
     }
 
-    private void calculateInflationIndex() {
+    public void calculateInflationIndex() {
         int sum = 0;
 
         for (Product product : c_Products) {
             sum += product.getPrice();
         }
 
-        int avg = sum / c_Products.size();
+        int avg = c_Products.size() > 0 ? sum / c_Products.size() : 0;
         m_InflationIndex = avg > 15 ? 3 : avg > 5 ? 2 : 1;
     }
 

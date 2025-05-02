@@ -29,6 +29,7 @@ public class Request extends Message {
         REMOVE_PRODUCT,
         DECREASE_QUANTITY,
         INCREASE_QUANTITY,
+        BUY_PRODUCT,
 
         SHOW_SALES_FOOD_TYPE, // stats
         SHOW_SALES_STORE_TYPE, // stats

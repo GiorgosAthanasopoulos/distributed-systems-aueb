@@ -13,24 +13,25 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.master.MasterCo
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.model.Filters;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.model.Product;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.model.Store;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.AddProductRequest;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.AddStoreRequest;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.BuyProductRequest;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.FilterStoresIntermediateRequest;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.FilterStoresRequest;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.IncreaseQuantityRequest;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ListProductsRequest;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ListProductsResponse;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ListStoresIntermediateRequest;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.NetworkUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.RemoveProductRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request.Action;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.AddProductRequest;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.AddStoreRequest;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.FilterStoresRequest;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.IncreaseQuantityRequest;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response.Status;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ShowSalesFoodTypeRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ShowSalesStoreTypeRequest;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ListProductsRequest;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ListProductsResponse;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ListStoresResponse;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request.Action;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response.About;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response.Status;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.reducer.ReducerConfig;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
 
@@ -39,7 +40,9 @@ public class Worker1 {
             "Invalid json");
 
     private final Socket c_Server;
+
     private final Socket c_Reducer;
+    private final Object c_REDUCER_LOCK = new Object();
 
     private final List<Store> c_STORES;
 
@@ -62,7 +65,7 @@ public class Worker1 {
                     socket.getLocalSocketAddress(), socket.getRemoteSocketAddress()));
             return socket;
         } catch (IOException e) {
-            Logger.error("Worker1::connectToServer failed to connect to server: " + e.getMessage());
+            Logger.error("Worker::connectToServer failed to connect to server: " + e.getMessage());
             return null;
         }
     }
@@ -122,7 +125,6 @@ public class Worker1 {
     }
 
     private Optional<Response> handleResponse(Socket p_To, Message message, String p_Json) {
-        // TODO: skip for now
         return Optional.empty();
     }
 
@@ -147,6 +149,9 @@ public class Worker1 {
                 return handleFilterStoresRequest(p_To, request, p_Json);
             }
 
+            case BUY_PRODUCT -> {
+                return handleBuyProductRequest(p_To, request, p_Json);
+            }
             case ADD_PRODUCT -> {
                 return handleAddProductRequest(p_To, request, p_Json);
             }
@@ -203,11 +208,16 @@ public class Worker1 {
         }
 
         c_STORES.add(store);
+        store.calculateInflationIndex();
         return Optional.of(new Response(UserAgent.WORKER, request.getId(), Status.SUCCESS, "Store added"));
     }
 
     private Optional<Response> handleListStoresRequest(Socket p_To, Request p_Request, String p_Json) {
-        return Optional.of(new ListStoresResponse(p_Request.getId(), c_STORES));
+        synchronized (c_REDUCER_LOCK) {
+            NetworkUtils.sendMessage(c_Reducer,
+                    new ListStoresIntermediateRequest(p_Request.getId(), c_STORES));
+        }
+        return Optional.empty();
     }
 
     private Optional<Response> handleFilterStoresRequest(Socket p_To, Request p_Request, String p_Json) {
@@ -228,7 +238,7 @@ public class Worker1 {
             return Optional.of(new Response(UserAgent.WORKER, p_Request.getId(), Status.FAILURE, "Invalid filters"));
         }
 
-        NetworkUtils.sendMessage(c_Reducer, p_Json);
+        NetworkUtils.sendMessage(c_Reducer, new FilterStoresIntermediateRequest(p_Request.getId(), c_STORES, filters));
         return Optional.empty();
     }
 
@@ -336,6 +346,41 @@ public class Worker1 {
         productExists.get().increaseQuantity(request.getQuantity());
         return Optional
                 .of(new Response(UserAgent.WORKER, p_Request.getId(), Status.SUCCESS, "Product quantity increased"));
+    }
+
+    private Optional<Response> handleBuyProductRequest(Socket p_To, Request p_Request, String p_Json) {
+        String addr = p_To.getLocalSocketAddress().toString();
+
+        Optional<BuyProductRequest> requestOptional = JsonUtils.fromJson(p_Json, BuyProductRequest.class);
+        if (requestOptional.isEmpty()) {
+            Logger.error("Worker::handleBuyProductRequest " + addr
+                    + " received invalid buy product request json");
+            return Optional.of(c_INVALID_JSON_RESPONSE);
+        }
+        BuyProductRequest request = requestOptional.get();
+
+        String storeName = request.getStoreName();
+        Optional<Store> storeExists = c_STORES.stream().filter(s -> s.getStoreName().equals(storeName)).findAny();
+        if (storeName == null || storeExists.isEmpty()) {
+            Logger.error("Worker::handleBuyProductRequest " + addr
+                    + " received buy product request with invalid store name");
+            return Optional.of(new Response(UserAgent.WORKER, p_Request.getId(), Status.FAILURE, "Invalid store name"));
+        }
+
+        Store store = storeExists.get();
+
+        String productName = request.getProductName();
+        Optional<Product> productExists = store.getProduct(productName);
+        if (productName == null || productExists.isEmpty()) {
+            Logger.error("Worker::handleBuyProductRequest " + addr
+                    + " received buy product request with invalid product name");
+            return Optional
+                    .of(new Response(UserAgent.WORKER, p_Request.getId(), Status.FAILURE, "Invalid product name"));
+        }
+
+        productExists.get().decreaseQuantity(request.getQuantity());
+        return Optional
+                .of(new Response(UserAgent.WORKER, p_Request.getId(), Status.SUCCESS, "Product purchased"));
     }
 
     private Optional<Response> handleDecreaseQuantityRequest(Socket p_To, Request p_Request, String p_Json) {

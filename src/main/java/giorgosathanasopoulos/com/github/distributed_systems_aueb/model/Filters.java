@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.math.Math;
+
 public class Filters {
     @SerializedName("Latitude")
     private final double c_Latitude;
@@ -56,5 +58,28 @@ public class Filters {
 
     public List<Integer> getPrices() {
         return c_Prices;
+    }
+
+    public boolean abides(Store store) {
+        if (!c_FoodTypes.contains(store.getFoodCategory())) {
+            System.out.println("food category");
+            return false;
+        }
+        if (!c_Stars.contains(store.getStars())) {
+            System.out.println("stars");
+            return false;
+        }
+        if (!c_Prices.contains(store.getInflationIndex())) {
+            System.out.println("price");
+            return false;
+        }
+        if (Math.getDistanceFromLatLonInKm(c_Latitude, c_Longitude, store.getLatitude(),
+                store.getLongitutde()) > c_RadiusKm) {
+            System.out.println("location");
+            return false;
+        }
+
+        System.out.println("filtered");
+        return true;
     }
 }

@@ -78,7 +78,7 @@ public class IncreaseQuantityCommand implements Command {
                 }
 
                 return new IncreaseQuantityRequest(UserAgent.CLIENT, UID.getNextUID(),
-                                Action.DECREASE_QUANTITY, storeName, productName, quantity);
+                                Action.INCREASE_QUANTITY, storeName, productName, quantity);
         }
 
         @Override

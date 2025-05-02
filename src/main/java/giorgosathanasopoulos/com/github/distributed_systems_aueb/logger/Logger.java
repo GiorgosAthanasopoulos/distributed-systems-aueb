@@ -18,7 +18,7 @@ public class Logger {
         String timestamp = LocalDateTime.now()
                 .format(LoggerConfig.c_DATE_FORMATTER);
         String logMessage = String.format(
-                "[%s] [%s] %s",
+                "[%s] [%s] %s\n",
                 timestamp,
                 p_Level,
                 p_Message);

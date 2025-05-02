@@ -24,6 +24,7 @@ public class HelpCommand implements Command {
         sb.append(new RemoveProductCommand().help()).append("\n");
         sb.append(new IncreaseQuantityCommand().help()).append("\n");
         sb.append(new DecreaseQuantityCommand().help()).append("\n");
+        sb.append(new BuyProductCommand().help()).append("\n");
         sb.append("\n");
 
         sb.append(new ShowSalesFoodTypeCommand().help()).append("\n");

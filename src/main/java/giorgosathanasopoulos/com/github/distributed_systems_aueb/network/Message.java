@@ -44,8 +44,8 @@ public class Message {
         return m_Src;
     }
 
-    public void setSrc(String p_json) {
-        this.m_Src = p_json;
+    public void setSrc(String p_Json) {
+        this.m_Src = p_Json;
     }
 
     public enum Type {

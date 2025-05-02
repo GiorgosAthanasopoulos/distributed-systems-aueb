@@ -40,7 +40,7 @@ public class Client {
         }
 
         System.out.println(jsonResponse);
-        // TODO: print results and buy products
+        // TODO: print results and buy products !IMPORTANT
     }
 
     private static String getInput(String p_Prompt, Predicate<String> p_Validator) {
@@ -84,7 +84,7 @@ public class Client {
             }
         });
         String foodTypesS = getInput(
-                "Enter food types (comma separated, without spaces in between values, e.g. pizza,coffee,desert): ",
+                "Enter food types (comma separated, without spaces in between values, e.g. pizzeria): ",
                 (p_Input) -> {
                     String[] foodTypes = p_Input.split(",");
                     for (String foodType : foodTypes) {

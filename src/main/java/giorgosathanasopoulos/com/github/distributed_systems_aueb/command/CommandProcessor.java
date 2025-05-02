@@ -29,6 +29,7 @@ public class CommandProcessor {
                 c_Commands.put(
                                 CommandConfig.c_DECREASE_QUANTITY_COMMAND,
                                 new DecreaseQuantityCommand());
+                c_Commands.put(CommandConfig.c_BUY_PRODUCT_COMMAND, new BuyProductCommand());
 
                 c_Commands.put(
                                 CommandConfig.c_SHOW_SALES_STORE_TYPE_COMMAND,

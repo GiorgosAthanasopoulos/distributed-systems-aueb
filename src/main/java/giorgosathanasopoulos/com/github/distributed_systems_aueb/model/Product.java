@@ -19,7 +19,7 @@ public class Product {
     private final double c_Price;
 
     @SerializedName("Visible")
-    private boolean m_Visible;
+    private boolean m_Visible; // NOTE: remember to hide only from client!
 
     @SerializedName("Id")
     private final int c_Id;
@@ -62,7 +62,7 @@ public class Product {
     }
 
     public void setHidden(boolean hidden) {
-        m_Visible = hidden;
+        m_Visible = !hidden;
     }
 
     public void toggleHidden() {

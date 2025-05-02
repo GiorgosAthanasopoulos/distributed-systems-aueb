@@ -3,6 +3,7 @@ package giorgosathanasopoulos.com.github.distributed_systems_aueb.reducer;
 public class ReducerConfig {
     public static final String c_HOST = "localhost";
     public static final int c_PORT = 8081;
+    public static final int c_BACKLOG = 10;
 
     // Network settings
     public static final String c_MASTER_HOST = "localhost";

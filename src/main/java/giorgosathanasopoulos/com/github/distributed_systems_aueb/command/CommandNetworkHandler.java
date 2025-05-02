@@ -2,12 +2,15 @@ package giorgosathanasopoulos.com.github.distributed_systems_aueb.command;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.master.MasterConfig;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.model.Product;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.model.Store;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ListProductsResponse;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ListStoresResponse;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.NetworkUtils;
@@ -68,33 +71,42 @@ public class CommandNetworkHandler {
             if (response.getStatus() == Status.SUCCESS) {
                 Logger.info(p_ClassMethod + " received successful response from server: "
                         + response.getMessage());
-                if (response.getAbout() != About.DEFAULT) {
-                    logResponseInformation(response, jsonResponse, p_ClassMethod);
-                }
+                // if (response.getAbout() != About.DEFAULT) {
+                // logResponseInformation(response, jsonResponse, p_ClassMethod);
+                // }
             } else
                 Logger.error(
                         p_ClassMethod + " received unsuccessful response from server: "
                                 + response.getMessage());
 
-            // TODO: implement cli side stats receival
+            // TODO: implement cli side stats receival !IMPORTANT
             if (response.getAbout() != About.DEFAULT) {
                 switch (response.getAbout()) {
                     case FILTER_STORES_REQUEST:
                         break;
                     case LIST_PRODUCTS_REQUEST:
+                        Optional<ListProductsResponse> responseOptional2 = JsonUtils.fromJson(jsonResponse,
+                                ListProductsResponse.class);
+                        if (responseOptional2.isEmpty()) {
+                            Logger.error("CommandNetworkHandler::handleMessage invalid list products repsonse json");
+                            sc.close();
+                            return;
+                        }
+                        ListProductsResponse response2 = responseOptional2.get();
+                        List<Product> products = response2.getProducts();
+                        Logger.info(JsonUtils.toJson(products));
                         break;
                     case LIST_STORES_REQUEST:
-                        Optional<ListStoresResponse> responseOptional1 = JsonUtils.fromJson(p_Json,
+                        Optional<ListStoresResponse> responseOptional3 = JsonUtils.fromJson(jsonResponse,
                                 ListStoresResponse.class);
-                        if (responseOptional1.isEmpty()) {
+                        if (responseOptional3.isEmpty()) {
                             Logger.error("CommandNetworkHandler::handleMessage invalid list stores response json");
                             sc.close();
                             return;
                         }
-                        ListStoresResponse response1 = responseOptional1.get();
-                        Logger.info(JsonUtils.toJson(response1.getStores()));
-                        break;
-                    case REDUCER_INFO:
+                        ListStoresResponse response3 = responseOptional3.get();
+                        List<Store> stores = response3.getStores();
+                        Logger.info(JsonUtils.toJson(stores));
                         break;
                     case SHOW_SALES_FOOD_TYPE_REQUEST:
                         break;
@@ -114,42 +126,5 @@ public class CommandNetworkHandler {
                 return;
             }
         }).start();
-    }
-
-    private static void logResponseInformation(Response p_Response, String p_Json, String p_ClassMethod) {
-        switch (p_Response.getAbout()) {
-            case REDUCER_INFO -> {
-            }
-
-            case LIST_STORES_REQUEST -> {
-            }
-            case FILTER_STORES_REQUEST -> {
-            }
-
-            case LIST_PRODUCTS_REQUEST -> {
-                Optional<ListProductsResponse> listProductsResponse = JsonUtils.fromJson(p_Json,
-                        ListProductsResponse.class);
-
-                if (listProductsResponse.isEmpty()) {
-                    Logger.error(
-                            p_ClassMethod + " could not parse list products request response");
-                    break;
-                }
-
-                Logger.info(
-                        p_ClassMethod + " received products list for store " + listProductsResponse.get().toString());
-            }
-
-            case SHOW_SALES_FOOD_TYPE_REQUEST -> {
-            }
-            case SHOW_SALES_STORE_TYPE_REQUEST -> {
-            }
-
-            case DEFAULT -> {
-            }
-
-            default -> {
-            }
-        }
     }
 }
