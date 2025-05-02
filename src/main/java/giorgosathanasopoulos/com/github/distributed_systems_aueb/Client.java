@@ -7,11 +7,15 @@ import java.util.Scanner;
 import java.util.function.Predicate;
 
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.client.ClientConfig;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.model.Filters;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.BuyProductRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.FilterStoresRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.NetworkUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request.Action;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
 
 public class Client {
@@ -40,7 +44,39 @@ public class Client {
         }
 
         System.out.println(jsonResponse);
-        // TODO: print results and buy products !IMPORTANT
+
+        String storeName = getInput("Enter store name: ", (s) -> {
+            return true;
+        });
+        String productName = getInput("Enter product name: ", (s) -> {
+            return true;
+        });
+        String quantityString = getInput("Enter quantity: ", s -> {
+            try {
+                Integer.parseInt(s);
+                return true;
+            } catch (NumberFormatException e) {
+                Logger.error("Client invalid number format: " + e.getMessage());
+                return false;
+            }
+        });
+        int quantity = Integer.parseInt(quantityString);
+        BuyProductRequest request1 = new BuyProductRequest(UserAgent.CLIENT, UID.getNextUID(), Action.BUY_PRODUCT,
+                storeName, productName, quantity);
+
+        if (!NetworkUtils.sendMessage(server, request1)) {
+            System.err.println("Failed to send request to server.");
+            return;
+        }
+
+        String jsonResponse1 = getResponse(server);
+        if (jsonResponse1 == null) {
+            System.err.println("Failed to receive response from server.");
+            return;
+        }
+
+        System.out.println(jsonResponse1);
+
     }
 
     private static String getInput(String p_Prompt, Predicate<String> p_Validator) {
