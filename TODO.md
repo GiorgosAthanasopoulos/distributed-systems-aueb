@@ -1,0 +1,1 @@
+- reducer/client show sales store/food type

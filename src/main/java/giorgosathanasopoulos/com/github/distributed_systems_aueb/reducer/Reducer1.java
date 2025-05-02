@@ -238,16 +238,50 @@ public class Reducer1 {
                 return Optional.empty();
             }
             case SHOW_SALES_FOOD_TYPE -> {
+                int id = request.getId();
+
+                if (c_Srp.containsKey(id)) {
+                    StatsResponsePayload srp = c_Srp.get(id);
+                    srp.addResponse(p_Json);
+                    if (srp.isReady()) {
+                        synchronized (c_SERVER_LOCK) {
+                            NetworkUtils.sendMessage(srp.getSocket(),
+                                    handleShowSalesFoodTypeRequest(id));
+                        }
+                    }
+                } else {
+                    StatsResponsePayload srp = new StatsResponsePayload(c_Server, WorkerConfig.c_WORKER_COUNT);
+                    srp.addResponse(p_Json);
+                    c_Srp.put(id, srp);
+                }
+
+                return Optional.empty();
             }
             case SHOW_SALES_STORE_TYPE -> {
+                int id = request.getId();
+
+                if (c_Srp.containsKey(id)) {
+                    StatsResponsePayload srp = c_Srp.get(id);
+                    srp.addResponse(p_Json);
+                    if (srp.isReady()) {
+                        synchronized (c_SERVER_LOCK) {
+                            NetworkUtils.sendMessage(srp.getSocket(),
+                                    handleShowSalesStoreTypeRequest(id));
+                        }
+                    }
+                } else {
+                    StatsResponsePayload srp = new StatsResponsePayload(c_Server, WorkerConfig.c_WORKER_COUNT);
+                    srp.addResponse(p_Json);
+                    c_Srp.put(id, srp);
+                }
+
+                return Optional.empty();
             }
             default -> {
                 return Optional.of(
                         new Response(UserAgent.REDUCER, request.getId(), Status.FAILURE, "Invalid reducer request"));
             }
         }
-
-        return Optional.of(new Response(UserAgent.REDUCER, request.getId(), Status.FAILURE, "Unknown error occurred"));
     }
 
     private Response handleListStoresRequest(int id) {
@@ -311,5 +345,13 @@ public class Reducer1 {
         }
 
         return new FilterStoresResponse(id, stores);
+    }
+
+    private Response handleShowSalesFoodTypeRequest(int id) {
+        return null;
+    }
+
+    private Response handleShowSalesStoreTypeRequest(int id) {
+        return null;
     }
 }

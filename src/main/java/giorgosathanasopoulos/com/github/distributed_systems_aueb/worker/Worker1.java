@@ -29,8 +29,10 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.RemoveP
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request.Action;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ShowSalesFoodTypeIntermediateRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response.Status;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ShowSalesFoodTypeRequest;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ShowSalesStoreTypeIntermediateRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ShowSalesStoreTypeRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.reducer.ReducerConfig;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
@@ -238,7 +240,10 @@ public class Worker1 {
             return Optional.of(new Response(UserAgent.WORKER, p_Request.getId(), Status.FAILURE, "Invalid filters"));
         }
 
-        NetworkUtils.sendMessage(c_Reducer, new FilterStoresIntermediateRequest(p_Request.getId(), c_STORES, filters));
+        synchronized (c_REDUCER_LOCK) {
+            NetworkUtils.sendMessage(c_Reducer,
+                    new FilterStoresIntermediateRequest(p_Request.getId(), c_STORES, filters));
+        }
         return Optional.empty();
     }
 
@@ -459,7 +464,10 @@ public class Worker1 {
             return Optional.of(new Response(UserAgent.WORKER, p_Request.getId(), Status.FAILURE, "Invalid food type"));
         }
 
-        NetworkUtils.sendMessage(c_Reducer, p_Json);
+        synchronized (c_REDUCER_LOCK) {
+            NetworkUtils.sendMessage(c_Reducer,
+                    new ShowSalesFoodTypeIntermediateRequest(p_Request.getId(), c_STORES, foodType));
+        }
         return Optional.empty();
     }
 
@@ -482,7 +490,10 @@ public class Worker1 {
             return Optional.of(new Response(UserAgent.WORKER, p_Request.getId(), Status.FAILURE, "Invalid store type"));
         }
 
-        NetworkUtils.sendMessage(c_Reducer, p_Json);
+        synchronized (c_REDUCER_LOCK) {
+            NetworkUtils.sendMessage(c_Reducer,
+                    new ShowSalesStoreTypeIntermediateRequest(p_Request.getId(), c_STORES, storeType));
+        }
         return Optional.empty();
     }
 }
