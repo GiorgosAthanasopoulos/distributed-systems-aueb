@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.file.FileUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.model.Filters;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.FilterStoresRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;

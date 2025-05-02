@@ -23,12 +23,12 @@ public class Logger {
                 p_Level,
                 p_Message);
 
-        if (LoggerConfig.c_LOG_TO_FILE && LoggerConfig.s_LogFile != null)
+        if (LoggerConfig.c_LogToFile && LoggerConfig.c_LogFile != null)
             logFile(
                     logMessage,
-                    LoggerConfig.s_LogFile);
+                    LoggerConfig.c_LogFile);
 
-        if (LoggerConfig.c_LOG_TO_STDOUT)
+        if (LoggerConfig.c_LogToStdout)
             logStd(p_Level, logMessage);
     }
 

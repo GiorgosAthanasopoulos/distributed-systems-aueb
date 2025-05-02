@@ -9,8 +9,8 @@ import java.util.function.Function;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.*;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response.Status;
@@ -123,9 +123,7 @@ public class Reducer implements AutoCloseable {
                         continue;
                     }
 
-                    processMessage(JsonUtils.fromJson(messageJson, Message.class).get()); // TODO: not checking if
-                                                                                          // optional is present
-
+                    processMessage(JsonUtils.fromJson(messageJson, Message.class).get());
                 } catch (IOException | InterruptedException e) {
                     Logger.error("Error in reducer listening thread: " + e.getMessage());
                     reconnect();

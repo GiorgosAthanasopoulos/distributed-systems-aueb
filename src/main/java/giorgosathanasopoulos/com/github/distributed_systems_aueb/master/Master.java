@@ -3,27 +3,35 @@ package giorgosathanasopoulos.com.github.distributed_systems_aueb.master;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.model.Store;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.AddProductRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.AddStoreRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.DecreaseQuantityRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.IncreaseQuantityRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ListProductsRequest;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ListStoresResponse;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.NetworkUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.RemoveProductRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.StatsResponsePayload;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response.Status;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.reducer.Reducer;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.worker.Worker;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.worker.Worker1;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.worker.WorkerConfig;
 
 public class Master {
@@ -45,9 +53,14 @@ public class Master {
     private Socket m_Reducer = null;
     private final Object c_REDUCER_LOCK = new Object();
 
-    private final HashMap<Integer, Socket> c_ToSendResponses = new HashMap<>();
+    private final HashMap<Integer, StatsResponsePayload> c_ToSendResponses = new HashMap<>();
+    private final Object c_RESPONSES_LOCK = new Object();
+
+    private final ExecutorService executor;
 
     public Master() {
+        executor = Executors.newFixedThreadPool(MasterConfig.c_THREAD_COUNT);
+
         c_Server = initServer();
         initWorkers();
         initReducer();
@@ -70,7 +83,7 @@ public class Master {
     private void initWorkers() {
         for (int i = 0; i < WorkerConfig.c_WORKER_COUNT; i++)
             new Thread(
-                    Worker::new).start();
+                    Worker1::new).start();
 
         Logger.info(
                 "Master::initReducer started worker threads");
@@ -95,8 +108,12 @@ public class Master {
 
         try {
             c_Server.close();
+            executor.shutdown();
+            executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (IOException e) {
             Logger.error("Master::serverLoop failed to close server: " + e.getLocalizedMessage());
+        } catch (InterruptedException e) {
+            Logger.error("Master::serverLoop failed to stop executor service: " + e.getMessage());
         }
     }
 
@@ -126,7 +143,7 @@ public class Master {
                             addr +
                             " received message: " +
                             json);
-            new Thread(() -> processClientMessage(p_Socket, json)).start();
+            executor.submit(() -> processClientMessage(p_Socket, json));
         }
 
         Logger.info("Master::clientThread client " + addr + " disconnected...");
@@ -171,6 +188,11 @@ public class Master {
         }
         Message message = messageOptional.get();
 
+        // if (message.getUserAgent() == UserAgent.CLIENT) {
+        // message.setId(UID.getNextUID());
+        // p_Json = JsonUtils.toJson(message);
+        // }
+
         return switch (message.getType()) {
             case REQUEST -> handleRequest(p_Socket, p_Json);
             case RESPONSE -> handleResponse(p_Socket, p_Json);
@@ -190,6 +212,7 @@ public class Master {
                         "Invalid message type"));
     }
 
+    // TODO: finish handling responses
     private Optional<Response> handleResponse(Socket p_Socket, String p_Json) {
         Optional<Response> empty = Optional.empty();
 
@@ -205,7 +228,8 @@ public class Master {
             return empty;
         }
 
-        Optional<Response> responseOptional = JsonUtils.fromJson(p_Json, Response.class);
+        Optional<Response> responseOptional = JsonUtils.fromJson(p_Json,
+                Response.class);
         if (responseOptional.isEmpty()) {
             Logger.error("Master::handleResponse " + addr + " failed to parse response json");
             return Optional.of(c_INVALID_JSON_RESPONSE);
@@ -215,9 +239,15 @@ public class Master {
         int id = response.getId();
 
         // logResponseStatus(response);
-        if (c_ToSendResponses.containsKey(id)) {
-            NetworkUtils.sendMessage(c_ToSendResponses.get(id), p_Json);
-            c_ToSendResponses.remove(id);
+        synchronized (c_RESPONSES_LOCK) {
+            if (c_ToSendResponses.containsKey(id)) {
+                StatsResponsePayload srp = c_ToSendResponses.get(id);
+                if (srp.isReady()) {
+                    NetworkUtils.sendMessage(srp.getSocket(), combineSRPResponses(srp));
+                    c_ToSendResponses.remove(id);
+                } else
+                    srp.addResponse(p_Json);
+            }
         }
 
         return empty;
@@ -225,10 +255,12 @@ public class Master {
 
     // private void logResponseStatus(Response response) {
     // switch (response.getStatus()) {
-    // case SUCCESS -> Logger.info("Master::logResponseStatus received successful
+    // case SUCCESS -> Logger.info("Master::logResponseStatus received
+    // successful
     // response: " +
     // response.getMessage());
-    // case FAILURE -> Logger.error("Master::logResponseStatus received unsuccessful
+    // case FAILURE -> Logger.error("Master::logResponseStatus received
+    // unsuccessful
     // response: " +
     // response.getMessage());
     // }
@@ -256,8 +288,8 @@ public class Master {
         }
         Request request = requestOptional.get();
 
-        if (request.getUserAgent() == UserAgent.CLIENT)
-            request.setId(UID.getNextUID());
+        // if (request.getUserAgent() == UserAgent.CLIENT)
+        // request.setId(UID.getNextUID());
 
         int workerId = getWorkerId(request, p_Json);
         switch (workerId) {
@@ -270,14 +302,19 @@ public class Master {
                 return handleHandshake(p_Socket, request);
             }
             case c_STATS -> {
+                synchronized (c_RESPONSES_LOCK) {
+                    c_ToSendResponses.put(request.getId(),
+                            new StatsResponsePayload(p_Socket, WorkerConfig.c_WORKER_COUNT));
+                }
                 return handleStats(p_Socket, request, p_Json);
             }
             default -> {
-                c_ToSendResponses.put(request.getId(), p_Socket);
+                synchronized (c_RESPONSES_LOCK) {
+                    c_ToSendResponses.put(request.getId(), new StatsResponsePayload(p_Socket, 1));
+                }
                 return forwardRequestToWorker(p_Socket, workerId, request, p_Json);
             }
         }
-
     }
 
     private Optional<Response> handleHandshake(Socket p_Socket, Request p_Request) {
@@ -298,7 +335,8 @@ public class Master {
         switch (p_Request.getUserAgent()) {
             case WORKER -> {
                 synchronized (c_WORKERS_LOCK) {
-                    c_Workers[m_LastAddedWorkerIdx++] = p_Socket;
+                    if (m_LastAddedWorkerIdx < c_Workers.length)
+                        c_Workers[m_LastAddedWorkerIdx++] = p_Socket;
                 }
                 return Optional
                         .of(new Response(UserAgent.MASTER, p_Request.getId(), Status.SUCCESS,
@@ -340,7 +378,9 @@ public class Master {
                 }
 
                 int hash = hash(storeName.get());
-                return Math.abs(hash) % c_Workers.length;
+                synchronized (c_WORKERS_LOCK) {
+                    return Math.abs(hash) % c_Workers.length;
+                }
             }
             case SHOW_SALES_FOOD_TYPE, SHOW_SALES_STORE_TYPE, LIST_STORES, FILTER_STORES -> {
                 return c_STATS;
@@ -355,16 +395,14 @@ public class Master {
     }
 
     private Optional<String> getStoreNameFromRequest(Request p_Request, String p_Json) {
-        Optional<String> empty = Optional.empty();
-
         if (p_Request == null) {
             Logger.error("Master::getStoreNameFromRequest called with null request");
-            return empty;
+            return Optional.empty();
         }
 
         if (p_Json == null) {
             Logger.error("Master::getStoreNameFromRequest called with null json");
-            return empty;
+            return Optional.empty();
         }
 
         switch (p_Request.getAction()) {
@@ -372,18 +410,18 @@ public class Master {
                 Optional<AddStoreRequest> addStoreRequest = JsonUtils.fromJson(p_Json, AddStoreRequest.class);
                 if (addStoreRequest.isEmpty()) {
                     Logger.error("Master::getStoreNameFromRequest  failed to parse add store request json");
-                    return empty;
+                    return Optional.empty();
                 }
                 return Optional.of(addStoreRequest.get().getStore().getStoreName());
             case LIST_STORES:
             case FILTER_STORES:
-                return empty;
+                return Optional.empty();
 
             case ADD_PRODUCT:
                 Optional<AddProductRequest> addProductRequest = JsonUtils.fromJson(p_Json, AddProductRequest.class);
                 if (addProductRequest.isEmpty()) {
                     Logger.error("Master::getStoreNameFromRequest failed to parse add product request json");
-                    return empty;
+                    return Optional.empty();
                 }
                 return Optional.of(addProductRequest.get().getStoreName());
             case LIST_PRODUCTS:
@@ -391,7 +429,7 @@ public class Master {
                         ListProductsRequest.class);
                 if (listProductsRequest.isEmpty()) {
                     Logger.error("Master::getStoreNameFromRequest failed to parse list products json");
-                    return empty;
+                    return Optional.empty();
                 }
                 return Optional.of(listProductsRequest.get().getStoreName());
             case REMOVE_PRODUCT:
@@ -399,15 +437,16 @@ public class Master {
                         RemoveProductRequest.class);
                 if (removeProductRequest.isEmpty()) {
                     Logger.error("Master::getStoreNameFromRequest  failed to parse remove product json");
-                    return empty;
+                    return Optional.empty();
                 }
                 return Optional.of(removeProductRequest.get().getStoreName());
             case DECREASE_QUANTITY:
                 Optional<DecreaseQuantityRequest> decreaseQuantityRequest = JsonUtils.fromJson(p_Json,
                         DecreaseQuantityRequest.class);
                 if (decreaseQuantityRequest.isEmpty()) {
-                    Logger.error("Master::getStoreNameFromRequest  failed to parse decrease quantity request json");
-                    return empty;
+                    Logger
+                            .error("Master::getStoreNameFromRequest  failed to parse decrease quantity request json");
+                    return Optional.empty();
                 }
                 return Optional.of(decreaseQuantityRequest.get().getStoreName());
             case INCREASE_QUANTITY:
@@ -415,20 +454,20 @@ public class Master {
                         IncreaseQuantityRequest.class);
                 if (increaseQuantityRequest.isEmpty()) {
                     Logger.error("Master::getStoreNameFromRequest failed to parse increase quantity request json");
-                    return empty;
+                    return Optional.empty();
                 }
                 return Optional.of(increaseQuantityRequest.get().getStoreName());
 
             case SHOW_SALES_FOOD_TYPE:
             case SHOW_SALES_STORE_TYPE:
-                return empty;
+                return Optional.empty();
 
             case REDUCER_HANDSHAKE:
             case WORKER_HANDSHAKE:
-                return empty;
+                return Optional.empty();
 
             default:
-                return empty;
+                return Optional.empty();
         }
     }
 
@@ -444,7 +483,8 @@ public class Master {
         String addr = p_Socket.getRemoteSocketAddress().toString();
 
         if (!isValidWorkerId(p_WorkerId)) {
-            Logger.error("Master::forwardRequestToWorker " + addr + " called with invalid worker id: " + p_WorkerId);
+            Logger
+                    .error("Master::forwardRequestToWorker " + addr + " called with invalid worker id: " + p_WorkerId);
             return empty;
         }
 
@@ -453,36 +493,90 @@ public class Master {
             return empty;
         }
 
-        NetworkUtils.sendMessage(c_Workers[p_WorkerId], p_Json);
+        synchronized (c_WORKERS_LOCK) {
+            NetworkUtils.sendMessage(c_Workers[p_WorkerId], p_Json);
+        }
         return Optional.empty();
     }
 
     private boolean isValidWorkerId(int p_WorkerId) {
-        return p_WorkerId >= 0 && p_WorkerId < c_Workers.length;
+        synchronized (c_WORKERS_LOCK) {
+            return p_WorkerId >= 0 && p_WorkerId < c_Workers.length;
+        }
     }
 
     private int hash(String p_StoreName) {
         return p_StoreName != null ? p_StoreName.hashCode() : 0;
     }
 
-    // TODO:
+    // TODO: handleStats
     // SHOW_SALES_FOOD_TYPE, SHOW_SALES_STORE_TYPE, LIST_STORES, FILTER_STORES
     private Optional<Response> handleStats(Socket p_Socket, Request p_Request, String p_Json) {
-        switch (p_Request.getAction()) {
-            case SHOW_SALES_FOOD_TYPE -> {
+        for (int i = 0; i < m_LastAddedWorkerIdx; ++i) {
+            synchronized (c_WORKERS_LOCK) {
+                NetworkUtils.sendMessage(c_Workers[i], p_Json);
             }
-            case SHOW_SALES_STORE_TYPE -> {
+        }
+        return Optional.empty();
+    }
+
+    // TODO: NOW finish implemeting combineSRPResponses
+    private Response combineSRPResponses(StatsResponsePayload p_Srp) {
+        switch ((Integer) p_Srp.getResponseCount()) {
+            case Integer i when i == 1 -> {
+                return JsonUtils.fromJson(p_Srp.getResponses().get(0), Response.class).get(); // TODO: we assume
+                                                                                              // optional is not empty
             }
-            case LIST_STORES -> {
-            }
-            case FILTER_STORES -> {
+            case Integer i when i == WorkerConfig.c_WORKER_COUNT -> {
+                String templateString = p_Srp.getResponses().get(0);
+                Optional<Response> templateOptional = JsonUtils.fromJson(templateString, Response.class);
+                if (templateOptional.isEmpty()) {
+                    Logger.error("Master::combineSRPResponses processing invalid json response");
+                    return c_INVALID_JSON_RESPONSE;
+                }
+                Response template = templateOptional.get();
+
+                switch (template.getAbout()) {
+                    case DEFAULT:
+                        return new Response(UserAgent.MASTER, template.getId(), Status.FAILURE,
+                                "Invalid operation (combineSRPResponses i==3 about==DEFAULT)");
+                    case FILTER_STORES_REQUEST:
+                        break;
+                    case LIST_PRODUCTS_REQUEST:
+                        break;
+                    case LIST_STORES_REQUEST:
+                        List<Store> stores = new ArrayList<>();
+
+                        for (String responseString : p_Srp.getResponses()) {
+                            Optional<ListStoresResponse> responseOptional = JsonUtils.fromJson(responseString,
+                                    ListStoresResponse.class);
+                            if (responseOptional.isEmpty()) {
+                                Logger.error(
+                                        "Master::combineSRPResponses failed to combine for i==3 and about==LIST_STORES_REQUEST");
+                                return new Response(UserAgent.MASTER, template.getId(), Status.FAILURE,
+                                        "Failed to combine srp i==3 about==LIST_STORES_REQUEST");
+                            }
+
+                            ListStoresResponse response = responseOptional.get();
+                            stores.addAll(response.getStores());
+                        }
+
+                        return new ListStoresResponse(template.getId(), stores);
+                    case REDUCER_INFO:
+                        break;
+                    case SHOW_SALES_FOOD_TYPE_REQUEST:
+                        break;
+                    case SHOW_SALES_STORE_TYPE_REQUEST:
+                        break;
+                    default:
+                        return c_INVALID_JSON_RESPONSE;
+                }
             }
             default -> {
-                return Optional
-                        .of(new Response(UserAgent.MASTER, p_Request.getId(), Status.FAILURE, "Invalid stats request"));
+                return c_INVALID_JSON_RESPONSE;
             }
         }
 
-        return Optional.empty();
+        return c_INVALID_JSON_RESPONSE;
     }
 }

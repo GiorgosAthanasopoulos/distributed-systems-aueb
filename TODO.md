@@ -1,1 +1,0 @@
-- Do we need auth when handling messages?

@@ -4,6 +4,7 @@ public class QuitCommand implements Command {
 
     @Override
     public boolean execute(Object... p_Args) {
+        System.exit(1);
         return true;
     }
 

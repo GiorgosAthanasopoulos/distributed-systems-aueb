@@ -2,9 +2,9 @@ package giorgosathanasopoulos.com.github.distributed_systems_aueb.repl;
 
 import java.util.Scanner;
 
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.command.CommandConfig;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.command.CommandProcessor;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 
 public class REPL {
 

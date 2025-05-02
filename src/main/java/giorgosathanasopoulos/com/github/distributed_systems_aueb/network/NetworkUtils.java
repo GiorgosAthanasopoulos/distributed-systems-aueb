@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 
 public class NetworkUtils {
     public static boolean sendMessage(Socket p_To, String p_Json) {

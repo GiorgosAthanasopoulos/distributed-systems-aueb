@@ -39,7 +39,7 @@ public class AddStoreCommand implements Command {
                 AddStoreRequest request = requestOptional.get();
                 request.setId(UID.getNextUID());
 
-                json = JsonUtils.toJson(requestOptional);
+                json = JsonUtils.toJson(request);
 
             }
             case Integer i when i > 1 -> {
@@ -84,7 +84,8 @@ public class AddStoreCommand implements Command {
             return new AddStoreRequest(UserAgent.CLIENT, UID.getNextUID(), Action.ADD_STORE,
                     new Store(storeName, latitude, longitude, foodCategory, stars, noOfVotes, storeLogo));
         } catch (NumberFormatException e) {
-            Logger.error("AddStoreCommand::getRawAddStoreRequest invalid number format: " + e.getLocalizedMessage());
+            Logger
+                    .error("AddStoreCommand::getRawAddStoreRequest invalid number format: " + e.getLocalizedMessage());
             return null;
         }
 

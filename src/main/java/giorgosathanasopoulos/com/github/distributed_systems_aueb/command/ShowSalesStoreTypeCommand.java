@@ -3,9 +3,9 @@ package giorgosathanasopoulos.com.github.distributed_systems_aueb.command;
 import java.io.File;
 import java.util.Optional;
 
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.file.FileUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request.Action;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ShowSalesStoreTypeRequest;

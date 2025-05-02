@@ -40,7 +40,7 @@ public class Client {
         }
 
         System.out.println(jsonResponse);
-        // TODO
+        // TODO: print results and buy products
     }
 
     private static String getInput(String p_Prompt, Predicate<String> p_Validator) {

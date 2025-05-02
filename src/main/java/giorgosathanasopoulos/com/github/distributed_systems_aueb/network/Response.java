@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 
+// TODO: maybe have message:id be the identifier id and create new id for response called for that will reference which request this response is for
 public class Response extends Message {
 
     @SerializedName("Status")

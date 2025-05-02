@@ -1,12 +1,12 @@
 package giorgosathanasopoulos.com.github.distributed_systems_aueb.command;
 
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.file.FileUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.json.JsonUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.RemoveProductRequest;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request.Action;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message.UserAgent;
-import giorgosathanasopoulos.com.github.distributed_systems_aueb.logger.Logger;
 
 import java.util.Optional;
 
