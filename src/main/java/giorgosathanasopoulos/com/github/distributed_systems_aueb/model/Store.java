@@ -88,8 +88,11 @@ public class Store {
         return c_StoreLogo;
     }
 
-    public List<Product> getProducts() {
-        return c_Products;
+    public List<Product> getProducts(boolean p_isAdmin) {
+        return c_Products
+                .stream()
+                .filter(p -> p.isVisible() || p_isAdmin)
+                .toList();
     }
 
     public boolean addProduct(Product p_Product) {

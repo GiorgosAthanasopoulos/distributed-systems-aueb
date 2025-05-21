@@ -443,7 +443,8 @@ public class Worker1 {
         }
 
         Store store = storeExists.get();
-        return Optional.of(new ListProductsResponse(p_Request.getId(), storeName, store.getProducts()));
+        return Optional.of(new ListProductsResponse(p_Request.getId(), storeName,
+                store.getProducts(request.getUserAgent() != UserAgent.CLIENT)));
     }
 
     private Optional<Response> handleShowSalesFoodTypeRequest(Socket p_To, Request p_Request, String p_Json) {
