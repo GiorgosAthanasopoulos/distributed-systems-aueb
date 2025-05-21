@@ -12,7 +12,7 @@ public class Message {
     @SerializedName("UserAgent")
     private final UserAgent c_UserAgent;
 
-    @SerializedName("ID")
+    @SerializedName("Id")
     private int c_Id;
 
     private transient String m_Src;

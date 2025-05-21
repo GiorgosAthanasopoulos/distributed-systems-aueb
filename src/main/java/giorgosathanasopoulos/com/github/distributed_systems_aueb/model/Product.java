@@ -53,6 +53,10 @@ public class Product {
         return c_Price;
     }
 
+    public int getId() {
+        return c_Id;
+    }
+
     public void setQuantity(int p_Quantity) {
         this.m_Quantity = p_Quantity;
     }
