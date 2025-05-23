@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="food_type_spinner_items">
+        <item>Select restaurant type</item>
+        <item>Pizzeria</item>
+    </array>
+</resources>
