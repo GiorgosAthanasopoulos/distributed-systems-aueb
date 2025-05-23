@@ -61,25 +61,16 @@ public class Filters {
     }
 
     public boolean abides(Store store) {
-        if (!c_FoodTypes.contains(store.getFoodCategory())) {
-            System.out.println("food category");
+        if (!c_FoodTypes.contains(store.getFoodCategory()))
             return false;
-        }
-        if (!c_Stars.contains(store.getStars())) {
-            System.out.println("stars");
+        if (!c_Stars.contains(store.getStars()))
             return false;
-        }
-        if (!c_Prices.contains(store.getInflationIndex())) {
-            System.out.println("price");
+        if (!c_Prices.contains(store.getInflationIndex()))
             return false;
-        }
         if (Math.getDistanceFromLatLonInKm(c_Latitude, c_Longitude, store.getLatitude(),
-                store.getLongitutde()) > c_RadiusKm) {
-            System.out.println("location");
+                store.getLongitutde()) > c_RadiusKm)
             return false;
-        }
 
-        System.out.println("filtered");
         return true;
     }
 }

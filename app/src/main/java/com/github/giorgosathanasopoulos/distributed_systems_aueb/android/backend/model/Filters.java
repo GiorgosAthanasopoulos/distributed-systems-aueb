@@ -74,7 +74,7 @@ public class Filters {
             return false;
         }
         if (Math.getDistanceFromLatLonInKm(c_Latitude, c_Longitude, store.getLatitude(),
-                store.getLongitutde()) > c_RadiusKm) {
+                store.getLongitude()) > c_RadiusKm) {
             System.out.println("location");
             return false;
         }

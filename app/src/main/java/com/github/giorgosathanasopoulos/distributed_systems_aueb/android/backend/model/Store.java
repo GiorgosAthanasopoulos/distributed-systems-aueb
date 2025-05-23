@@ -1,6 +1,10 @@
 package com.github.giorgosathanasopoulos.distributed_systems_aueb.android.backend.model;
 
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +14,7 @@ import com.google.gson.annotations.SerializedName;
 
 import com.github.giorgosathanasopoulos.distributed_systems_aueb.android.backend.uid.UID;
 
-public class Store {
+public class Store implements Parcelable {
 
     @SerializedName("Name")
     private final String c_StoreName;
@@ -34,7 +38,7 @@ public class Store {
     private final String c_StoreLogo;
 
     @SerializedName("Products")
-    private final List<Product> c_Products = new ArrayList<>();
+    private List<Product> c_Products = new ArrayList<>();
 
     @SerializedName("InflationIndex")
     private int m_InflationIndex;
@@ -62,6 +66,31 @@ public class Store {
         calculateInflationIndex();
     }
 
+    protected Store(Parcel in) {
+        c_StoreName = in.readString();
+        c_Latitude = in.readDouble();
+        c_Longitude = in.readDouble();
+        c_FoodCategory = in.readString();
+        m_Stars = in.readInt();
+        m_NoOfVotes = in.readInt();
+        c_StoreLogo = in.readString();
+        c_Products = in.createTypedArrayList(Product.CREATOR);
+        m_InflationIndex = in.readInt();
+        c_Id = in.readInt();
+    }
+
+    public static final Creator<Store> CREATOR = new Creator<>() {
+        @Override
+        public Store createFromParcel(Parcel in) {
+            return new Store(in);
+        }
+
+        @Override
+        public Store[] newArray(int size) {
+            return new Store[size];
+        }
+    };
+
     public String getStoreName() {
         return c_StoreName;
     }
@@ -70,7 +99,7 @@ public class Store {
         return c_Latitude;
     }
 
-    public double getLongitutde() {
+    public double getLongitude() {
         return c_Longitude;
     }
 
@@ -120,9 +149,7 @@ public class Store {
     public boolean removeProduct(String p_Name) {
         Optional<Product> product = c_Products
                 .stream()
-                .filter((Product p) -> {
-                    return p.getName().equals(p_Name);
-                })
+                .filter((Product p) -> p.getName().equals(p_Name))
                 .findFirst();
 
         if (product.isEmpty()) {
@@ -137,10 +164,10 @@ public class Store {
         int sum = 0;
 
         for (Product product : c_Products) {
-            sum += product.getPrice();
+            sum += (int) product.getPrice();
         }
 
-        int avg = c_Products.size() > 0 ? sum / c_Products.size() : 0;
+        int avg = !c_Products.isEmpty() ? sum / c_Products.size() : 0;
         m_InflationIndex = avg > 15 ? 3 : avg > 5 ? 2 : 1;
     }
 
@@ -158,5 +185,24 @@ public class Store {
 
     public Optional<Product> getProduct(String p_ProductName) {
         return c_Products.stream().filter(p -> p.getName().equals(p_ProductName)).findFirst();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(c_StoreName);
+        dest.writeDouble(c_Latitude);
+        dest.writeDouble(c_Longitude);
+        dest.writeString(c_FoodCategory);
+        dest.writeInt(m_Stars);
+        dest.writeInt(m_NoOfVotes);
+        dest.writeString(c_StoreLogo);
+        dest.writeTypedList(c_Products);
+        dest.writeInt(m_InflationIndex);
+        dest.writeInt(c_Id);
     }
 }

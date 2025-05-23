@@ -1,5 +1,8 @@
 package com.github.giorgosathanasopoulos.distributed_systems_aueb.android.backend.network.response;
 
+import android.os.Parcelable;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
@@ -18,7 +21,7 @@ public class FilterStoresResponse extends Response {
         setSrc(JsonUtils.toJson(this));
     }
 
-    public List<Store> getStores() {
-        return c_Stores;
+    public ArrayList<? extends Parcelable> getStores() {
+        return (ArrayList<? extends Parcelable>) c_Stores;
     }
 }
