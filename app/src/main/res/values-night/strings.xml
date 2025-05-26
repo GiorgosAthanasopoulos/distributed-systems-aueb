@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Distributed Systems AUEB</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
     <string name="radius_km_to_find_stores_in">Radius KM (to find stores in)</string>
+    <string name="filter">Filter</string>
+
+    <string name="pizzeriaChip">pizzeria</string>
+
+    <string name="oneStarChip">*</string>
+    <string name="twoStarChip">**</string>
+    <string name="threeStarChip">***</string>
+    <string name="fourStarChip">****</string>
+    <string name="fiveStarChip">*****</string>
+
+    <string name="cheapChip">$</string>
+    <string name="midPricedChip">$$</string>
+    <string name="expensiveChip">$$$</string>
+
+    <string name="star_rating">Star Rating</string>
+    <string name="price_range">Price Range</string>
+    <string name="food_type">Food Type</string>
+
+    <string name="product_name">Product Name</string>
+    <string name="product_type">Product Type</string>
+
+    <string name="product_quantity">Quantity</string>
+    <string name="product_price">Price</string>
+    <string name="product_id">ID</string>
+    <string name="product_buy">Buy</string>
 </resources>

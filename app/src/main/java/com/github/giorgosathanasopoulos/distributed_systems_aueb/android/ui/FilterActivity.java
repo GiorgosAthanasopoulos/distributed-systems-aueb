@@ -91,7 +91,6 @@ public class FilterActivity extends AppCompatActivity {
                 DialogUtils.showAlertDialog(this, "Error", "Failed to send request: " + result.getError());
 
             else {
-//                DialogUtils.showAlertDialog(this, "Info", "Received successful response from server");
                 Intent intent = new Intent(this, ListBuyActivity.class);
                 FilterStoresResponse response = JsonUtils.fromJson(result.getValue(), FilterStoresResponse.class).get(); // NOTE: we dont check optional cause we check in backend
                 intent.putParcelableArrayListExtra("stores", response.getStores());

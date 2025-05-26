@@ -13,25 +13,29 @@
     "LogoPath": "/usr/bin/images/storeLogo.png",
     "Products": [
       {
+        "StoreName": "storeName",
         "Name": "margarita",
         "Type": "pizza",
         "Quantity": 5000,
         "Price": 9.2,
-        "Visble": true
+        "Visible": true,
+        "Id": 0
       },
       {
         "Name": "special",
         "Type": "pizza",
         "Quantity": 1000,
         "Price": 12,
-        "Visible": true
+        "Visible": true,
+        "Id": 1
       },
       {
         "Name": "chef’s Salad",
         "Type": "salad",
         "Quantity": 100,
         "Price": 5,
-        "Visible": true
+        "Visible": true,
+        "Id": 2
       }
     ]
   }

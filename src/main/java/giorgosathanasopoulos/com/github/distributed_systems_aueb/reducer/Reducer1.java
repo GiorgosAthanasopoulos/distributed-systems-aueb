@@ -347,10 +347,12 @@ public class Reducer1 {
         return new FilterStoresResponse(id, stores);
     }
 
+    // TODO: implement handleShowSalesFoodTypeRequest
     private Response handleShowSalesFoodTypeRequest(int id) {
         return null;
     }
 
+    // TODO: implement handleShowSalesStoreTypeRequest
     private Response handleShowSalesStoreTypeRequest(int id) {
         return null;
     }

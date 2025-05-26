@@ -58,5 +58,6 @@ public class Message {
         WORKER,
         REDUCER,
         CLIENT,
+        MANAGER,
     }
 }

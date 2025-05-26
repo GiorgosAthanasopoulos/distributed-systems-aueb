@@ -10,6 +10,8 @@ import com.google.gson.annotations.SerializedName;
 import com.github.giorgosathanasopoulos.distributed_systems_aueb.android.backend.uid.UID;
 
 public class Product implements Parcelable {
+    @SerializedName("StoreName")
+    private final String c_StoreName;
 
     @SerializedName("Name")
     private final String c_Name;
@@ -30,10 +32,12 @@ public class Product implements Parcelable {
     private final int c_Id;
 
     public Product(
+            String p_StoreName,
             String p_Name,
             String p_Type,
             int p_Quantity,
             double p_Price) {
+        this.c_StoreName = p_StoreName;
         this.c_Name = p_Name;
         this.c_Type = p_Type;
         this.m_Quantity = p_Quantity;
@@ -43,6 +47,7 @@ public class Product implements Parcelable {
     }
 
     protected Product(Parcel in) {
+        c_StoreName = in.readString();
         c_Name = in.readString();
         c_Type = in.readString();
         m_Quantity = in.readInt();
@@ -62,6 +67,10 @@ public class Product implements Parcelable {
             return new Product[size];
         }
     };
+
+    public String getStoreName() {
+        return c_StoreName;
+    }
 
     public String getName() {
         return c_Name;
@@ -121,6 +130,7 @@ public class Product implements Parcelable {
     @Override
     public String toString() {
         return "{\n" +
+                "\t\"StoreName\": \"" + c_StoreName + "\"\n" +
                 "\t\"Name\": \"" + c_Name + "\"\n" +
                 "\t\"Type\": \"" + c_Type + "\"\n" +
                 "\t\"Quantity\": " + m_Quantity + "\n" +
@@ -140,6 +150,7 @@ public class Product implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(c_StoreName);
         dest.writeString(c_Name);
         dest.writeString(c_Type);
         dest.writeInt(m_Quantity);

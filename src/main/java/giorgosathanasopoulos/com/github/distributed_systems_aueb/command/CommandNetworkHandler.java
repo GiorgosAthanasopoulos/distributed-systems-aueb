@@ -79,7 +79,6 @@ public class CommandNetworkHandler {
                         p_ClassMethod + " received unsuccessful response from server: "
                                 + response.getMessage());
 
-            // TODO: implement cli side stats receival !IMPORTANT
             if (response.getAbout() != About.DEFAULT) {
                 switch (response.getAbout()) {
                     case FILTER_STORES_REQUEST:

@@ -84,7 +84,7 @@ public class AddProductCommand implements Command {
         }
 
         return new AddProductRequest(UserAgent.CLIENT, UID.getNextUID(),
-                Action.ADD_PRODUCT, storeName, new Product(productName, productType, availability, price));
+                Action.ADD_PRODUCT, storeName, new Product(storeName, productName, productType, availability, price));
     }
 
     @Override

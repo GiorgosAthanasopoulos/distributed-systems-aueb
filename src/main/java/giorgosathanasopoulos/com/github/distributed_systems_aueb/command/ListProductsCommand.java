@@ -46,7 +46,7 @@ public class ListProductsCommand implements Command {
                     json = JsonUtils.toJson(requestOptional);
                 } else {
                     ListProductsRequest request = new ListProductsRequest(
-                            UserAgent.CLIENT,
+                            UserAgent.MANAGER,
                             UID.getNextUID(),
                             Action.LIST_PRODUCTS, arg);
                     json = JsonUtils.toJson(request);

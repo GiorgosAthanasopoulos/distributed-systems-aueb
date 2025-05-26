@@ -6,6 +6,9 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.uid.UID;
 
 public class Product {
 
+    @SerializedName("StoreName")
+    private final String c_StoreName;
+
     @SerializedName("Name")
     private final String c_Name;
 
@@ -19,22 +22,28 @@ public class Product {
     private final double c_Price;
 
     @SerializedName("Visible")
-    private boolean m_Visible; // NOTE: remember to hide only from client!
+    private boolean m_Visible = true; // NOTE: remember to hide only from client!
 
     @SerializedName("Id")
     private final int c_Id;
 
     public Product(
+            String p_StoreName,
             String p_Name,
             String p_Type,
             int p_Quantity,
             double p_Price) {
+        this.c_StoreName = p_StoreName;
         this.c_Name = p_Name;
         this.c_Type = p_Type;
         this.m_Quantity = p_Quantity;
         this.c_Price = p_Price;
         this.m_Visible = true;
         c_Id = UID.getNextUID();
+    }
+
+    public String getStoreName() {
+        return c_StoreName;
     }
 
     public String getName() {
@@ -96,6 +105,7 @@ public class Product {
         StringBuilder sb = new StringBuilder();
 
         sb.append("{\n");
+        sb.append("\t\"StoreName\": \"" + c_StoreName + "\"\n");
         sb.append("\t\"Name\": \"" + c_Name + "\"\n");
         sb.append("\t\"Type\": \"" + c_Type + "\"\n");
         sb.append("\t\"Quantity\": " + m_Quantity + "\n");

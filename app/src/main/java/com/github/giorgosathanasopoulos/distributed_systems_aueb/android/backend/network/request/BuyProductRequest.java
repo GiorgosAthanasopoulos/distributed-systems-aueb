@@ -13,9 +13,9 @@ public class BuyProductRequest extends Request {
     @SerializedName("Quantity")
     private final int c_QUANTITY;
 
-    public BuyProductRequest(UserAgent p_UserAgent, int p_Id, Action p_Action,
+    public BuyProductRequest(UserAgent p_UserAgent, int p_Id,
             String p_StoreName, String p_ProductName, int p_Quantity) {
-        super(p_UserAgent, p_Id, p_Action);
+        super(p_UserAgent, p_Id, Action.BUY_PRODUCT);
         this.c_STORE_NAME = p_StoreName;
         this.c_PRODUCT_NAME = p_ProductName;
         this.c_QUANTITY = p_Quantity;

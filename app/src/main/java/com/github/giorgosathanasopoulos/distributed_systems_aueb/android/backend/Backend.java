@@ -7,6 +7,7 @@ import android.os.Looper;
 import com.github.giorgosathanasopoulos.distributed_systems_aueb.android.backend.json.JsonUtils;
 import com.github.giorgosathanasopoulos.distributed_systems_aueb.android.backend.model.Filters;
 import com.github.giorgosathanasopoulos.distributed_systems_aueb.android.backend.network.Message;
+import com.github.giorgosathanasopoulos.distributed_systems_aueb.android.backend.network.request.BuyProductRequest;
 import com.github.giorgosathanasopoulos.distributed_systems_aueb.android.backend.network.request.FilterStoresRequest;
 import com.github.giorgosathanasopoulos.distributed_systems_aueb.android.backend.network.request.Request;
 import com.github.giorgosathanasopoulos.distributed_systems_aueb.android.backend.network.response.Response;
@@ -66,6 +67,11 @@ public class Backend {
     public static boolean sendFilterStoresRequest(Filters filters, ResponseCallback responseCallback) {
         FilterStoresRequest filterStoresRequest = new FilterStoresRequest(Message.UserAgent.CLIENT, UID.getNextUID(), filters);
         return sendRequest(filterStoresRequest, responseCallback);
+    }
+
+    public static boolean sendBuyRequest(String storeName, String productName, int quantity, ResponseCallback responseCallback) {
+        BuyProductRequest buyProductRequest = new BuyProductRequest(Message.UserAgent.CLIENT, UID.getNextUID(), storeName, productName, quantity);
+        return sendRequest(buyProductRequest, responseCallback);
     }
 
     public static void destroy() {
