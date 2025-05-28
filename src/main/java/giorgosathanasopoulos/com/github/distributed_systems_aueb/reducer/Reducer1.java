@@ -25,6 +25,8 @@ import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Message
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.NetworkUtils;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Request;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.ShowSalesFoodTypeIntermediateRequest;
+import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response.About;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.Response.Status;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.network.StatsResponsePayload;
 import giorgosathanasopoulos.com.github.distributed_systems_aueb.worker.WorkerConfig;
@@ -312,7 +314,10 @@ public class Reducer1 {
     }
 
     private Response handleFilterStoresRequest(int id) {
-        StatsResponsePayload srp = c_Srp.get(id);
+        StatsResponsePayload srp;
+        synchronized (c_SRP_LOCK) {
+            srp = c_Srp.get(id);
+        }
         List<Store> stores = new ArrayList<>();
         Filters filters = null;
 
@@ -349,6 +354,39 @@ public class Reducer1 {
 
     // TODO: implement handleShowSalesFoodTypeRequest
     private Response handleShowSalesFoodTypeRequest(int id) {
+        StatsResponsePayload srp;
+        synchronized (c_SRP_LOCK) {
+            srp = c_Srp.get(id);
+        }
+        List<Store> stores = new ArrayList<>();
+        String foodType;
+
+        for (String part : srp.getResponses()) {
+            Optional<ShowSalesFoodTypeIntermediateRequest> intermediateOptional = JsonUtils.fromJson(part,
+                    ShowSalesFoodTypeIntermediateRequest.class);
+            if (intermediateOptional.isEmpty())
+                return new Response(UserAgent.REDUCER, id, Status.FAILURE,
+                        "One of the intermediate request parts contain invalid json",
+                        About.SHOW_SALES_FOOD_TYPE_REQUEST);
+            ShowSalesFoodTypeIntermediateRequest intermediate = intermediateOptional.get();
+
+            if (intermediate == null)
+                return new Response(UserAgent.REDUCER, id, Status.FAILURE,
+                        "One of the intermediate request parts is null", About.SHOW_SALES_FOOD_TYPE_REQUEST);
+
+            if (intermediate.getStores() == null)
+                return new Response(UserAgent.REDUCER, id, Status.FAILURE,
+                        "One of the intermediate request parts contain null stores",
+                        About.SHOW_SALES_FOOD_TYPE_REQUEST);
+            stores.addAll(intermediate.getStores());
+
+            if (intermediate.getFoodType() == null || intermediate.getFoodType().isBlank())
+                return new Response(UserAgent.REDUCER, id, Status.FAILURE,
+                        "One of the intermediate request parts contain empty food type filters",
+                        About.SHOW_SALES_FOOD_TYPE_REQUEST);
+            foodType = intermediate.getFoodType();
+        }
+
         return null;
     }
 
